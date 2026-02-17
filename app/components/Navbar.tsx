@@ -2,15 +2,14 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { useCart } from "../context/CartContext"; // 1. Import the hook
+import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
   const pathname = usePathname();
   const isMenuPage = pathname === "/menu";
-  
-  // 2. Get the real count from the global Cart Context
   const { totalItems } = useCart();
 
+  // Helper to highlight active links
   const getLinkClass = (path: string) => {
     const isActive = pathname === path;
     return isActive 
@@ -18,30 +17,31 @@ export default function Navbar() {
       : "text-[#181112] dark:text-gray-200 font-semibold hover:text-primary transition-colors";
   };
 
-  // 3. Reusable Cart Button Component (Updates automatically)
+  // Reusable Cart Button Component with Link
   const CartButton = ({ isHomeTheme = false }) => (
-    <button className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors shadow-lg cursor-pointer ${
-      isHomeTheme 
-        ? "bg-background-light dark:bg-[#33181c] hover:bg-gray-100 dark:hover:bg-[#452026] text-[#181112] dark:text-white" // Home style
-        : "bg-primary hover:bg-red-600 text-white shadow-primary/20" // Menu style (Red)
-    }`}>
-      <span className="material-symbols-outlined text-[20px]">shopping_cart</span>
-      
-      {/* Logic for Home Theme (Icon only + Badge) vs Menu Theme (Text "Cart (0)") */}
-      {isHomeTheme ? (
-         // Badge style for Home
-         <>
-           {totalItems > 0 && (
-             <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1 bg-primary text-white text-xs font-bold rounded-full border-2 border-white dark:border-[#221013]">
-               {totalItems}
-             </span>
-           )}
-         </>
-      ) : (
-         // Text style for Menu
-         <span className="text-sm font-bold">Cart ({totalItems})</span>
-      )}
-    </button>
+    <Link href="/cart">
+      <button className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors shadow-lg cursor-pointer ${
+        isHomeTheme 
+          ? "bg-background-light dark:bg-[#33181c] hover:bg-gray-100 dark:hover:bg-[#452026] text-[#181112] dark:text-white" 
+          : "bg-primary hover:bg-red-600 text-white shadow-primary/20"
+      }`}>
+        <span className="material-symbols-outlined text-[20px]">shopping_cart</span>
+        
+        {isHomeTheme ? (
+           // Home Style: Icon only + Badge
+           <>
+             {totalItems > 0 && (
+               <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1 bg-primary text-white text-xs font-bold rounded-full border-2 border-white dark:border-[#221013]">
+                 {totalItems}
+               </span>
+             )}
+           </>
+        ) : (
+           // Menu Style: Full Text "Cart (0)"
+           <span className="text-sm font-bold">Cart ({totalItems})</span>
+        )}
+      </button>
+    </Link>
   );
 
   // --- MENU PAGE NAVBAR ---
@@ -68,7 +68,7 @@ export default function Navbar() {
               <span className="material-symbols-outlined">notifications</span>
             </button>
             
-            {/* The Dynamic Cart Button (Menu Style) */}
+            {/* Menu Style Cart Button (Red) */}
             <CartButton isHomeTheme={false} />
 
             <div 
@@ -107,7 +107,7 @@ export default function Navbar() {
             <span className="text-sm font-semibold text-[#181112] dark:text-white hidden lg:inline">Search</span>
           </button>
           
-          {/* The Dynamic Cart Button (Home Style - Relative needed for badge positioning) */}
+          {/* Home Style Cart Button (Icon + Badge) */}
           <div className="relative">
              <CartButton isHomeTheme={true} />
           </div>
