@@ -68,7 +68,7 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="flex gap-8 overflow-x-auto hide-scrollbar pb-6 px-1">
+          <div className="flex gap-19 overflow-x-auto hide-scrollbar pb-6 px-1">
             {/* Category Item: Pizza */}
             <a className="group flex flex-col items-center gap-4 min-w-[120px] cursor-pointer" href="#">
               <div className="size-28 rounded-full bg-white dark:bg-[#33181c] border-2 border-white dark:border-[#452026] shadow-lg flex items-center justify-center group-hover:shadow-xl group-hover:border-primary transition-all duration-300 overflow-hidden relative">

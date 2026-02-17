@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import SmoothScrolling from "./components/SmoothScrolling";
+import { CartProvider } from "./context/CartContext"; // Import the provider
 
 export const metadata: Metadata = {
   title: "FoodDelivery",
@@ -29,13 +30,14 @@ export default function RootLayout({
         />
       </head>
       <body className="flex flex-col min-h-screen bg-background-light dark:bg-background-dark text-[#181112] dark:text-white font-sans">
-        <SmoothScrolling />
-        <Navbar />
-        {/* Children contains the page content */}
-        <main className="flex-grow">
-          {children}
-        </main>
-        <Footer />
+        <CartProvider>
+          <SmoothScrolling />
+          <Navbar />
+          <main className="flex-grow">
+            {children}
+          </main>
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

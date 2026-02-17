@@ -2,23 +2,51 @@
 import React from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { useCart } from "../context/CartContext"; // 1. Import the hook
 
 export default function Navbar() {
   const pathname = usePathname();
   const isMenuPage = pathname === "/menu";
+  
+  // 2. Get the real count from the global Cart Context
+  const { totalItems } = useCart();
 
-  // Helper function to determine link styles
   const getLinkClass = (path: string) => {
     const isActive = pathname === path;
     return isActive 
-      ? "text-primary font-bold transition-colors" // Active Style
-      : "text-[#181112] dark:text-gray-200 font-semibold hover:text-primary transition-colors"; // Inactive Style
+      ? "text-primary font-bold transition-colors" 
+      : "text-[#181112] dark:text-gray-200 font-semibold hover:text-primary transition-colors";
   };
 
-  // --- RENDER MENU NAVBAR (Content specific to /menu, but SAME THEME as Home) ---
+  // 3. Reusable Cart Button Component (Updates automatically)
+  const CartButton = ({ isHomeTheme = false }) => (
+    <button className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors shadow-lg cursor-pointer ${
+      isHomeTheme 
+        ? "bg-background-light dark:bg-[#33181c] hover:bg-gray-100 dark:hover:bg-[#452026] text-[#181112] dark:text-white" // Home style
+        : "bg-primary hover:bg-red-600 text-white shadow-primary/20" // Menu style (Red)
+    }`}>
+      <span className="material-symbols-outlined text-[20px]">shopping_cart</span>
+      
+      {/* Logic for Home Theme (Icon only + Badge) vs Menu Theme (Text "Cart (0)") */}
+      {isHomeTheme ? (
+         // Badge style for Home
+         <>
+           {totalItems > 0 && (
+             <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1 bg-primary text-white text-xs font-bold rounded-full border-2 border-white dark:border-[#221013]">
+               {totalItems}
+             </span>
+           )}
+         </>
+      ) : (
+         // Text style for Menu
+         <span className="text-sm font-bold">Cart ({totalItems})</span>
+      )}
+    </button>
+  );
+
+  // --- MENU PAGE NAVBAR ---
   if (isMenuPage) {
     return (
-      // Applied exact same classes as Home: bg-white/90, dark:bg-[#1a0b0d]/90, backdrop-blur-md, h-20
       <header className="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#1a0b0d]/90 backdrop-blur-md border-b border-[#f4f0f1] dark:border-[#3a1d21]">
         <div className="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-4 text-[#181112] dark:text-white">
@@ -38,12 +66,11 @@ export default function Navbar() {
           <div className="flex items-center gap-6">
             <button className="relative p-2 text-[#181112] dark:text-white hover:bg-gray-100 dark:hover:bg-[#33181c] rounded-full transition-colors cursor-pointer">
               <span className="material-symbols-outlined">notifications</span>
-              <span className="absolute top-1.5 right-2 size-2 bg-primary rounded-full"></span>
             </button>
-            <button className="flex items-center gap-2 bg-primary hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors shadow-lg shadow-primary/20 cursor-pointer">
-              <span className="material-symbols-outlined text-[20px]">shopping_cart</span>
-              <span className="text-sm font-bold">Cart (2)</span>
-            </button>
+            
+            {/* The Dynamic Cart Button (Menu Style) */}
+            <CartButton isHomeTheme={false} />
+
             <div 
               className="size-9 rounded-full bg-cover bg-center border-2 border-white shadow-sm cursor-pointer" 
               style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuATvQn9vyCe_MOlfQ0RbZTXFrxt9StE6kDuGp9BpMUsyFQ_YmCDCEz-Gy5puDjfZIofW77RZNduz-vtX_HOsEkNRtDiw6tuG7vWURODfv_MoDW9WaP2T2VkmvvKu41MxUBMCSvPiP7VgPFYIDKeEEwwJB-y4WKAbEFHfhWM97XmiwEQYUN6URJTq0_WmE2GceN5auD8woB1MeMESyZ1xNLbdASxRzjY5DgUEoeTBMq6o7fNa9JInYAaf83Ah87gwrc7_be-QTqRIMYm')" }}
@@ -54,7 +81,7 @@ export default function Navbar() {
     );
   }
 
-  // --- RENDER HOME NAVBAR ---
+  // --- HOME PAGE NAVBAR ---
   return (
     <header className="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#1a0b0d]/90 backdrop-blur-md border-b border-[#f4f0f1] dark:border-[#3a1d21]">
       <div className="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
@@ -68,18 +95,10 @@ export default function Navbar() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
-          <Link className={getLinkClass("/") + " text-sm"} href="/">
-            Home
-          </Link>
-          <Link className={getLinkClass("/menu") + " text-sm"} href="/menu">
-            Menu
-          </Link>
-          <a className="text-[#181112] dark:text-gray-200 text-sm font-medium hover:text-primary transition-colors" href="#">
-            Deals
-          </a>
-          <a className="text-[#181112] dark:text-gray-200 text-sm font-medium hover:text-primary transition-colors" href="#">
-            Partner with us
-          </a>
+          <Link className={getLinkClass("/") + " text-sm"} href="/">Home</Link>
+          <Link className={getLinkClass("/menu") + " text-sm"} href="/menu">Menu</Link>
+          <a className="text-[#181112] dark:text-gray-200 text-sm font-medium hover:text-primary transition-colors" href="#">Deals</a>
+          <a className="text-[#181112] dark:text-gray-200 text-sm font-medium hover:text-primary transition-colors" href="#">Partner with us</a>
         </nav>
 
         <div className="flex items-center gap-3">
@@ -87,10 +106,12 @@ export default function Navbar() {
             <span className="material-symbols-outlined text-[20px] text-[#181112] dark:text-white">search</span>
             <span className="text-sm font-semibold text-[#181112] dark:text-white hidden lg:inline">Search</span>
           </button>
-          <button className="relative flex items-center justify-center size-10 bg-background-light dark:bg-[#33181c] rounded-lg hover:bg-gray-100 dark:hover:bg-[#452026] transition-colors group cursor-pointer">
-            <span className="material-symbols-outlined text-[20px] text-[#181112] dark:text-white">shopping_cart</span>
-            <span className="absolute top-1 right-1 size-2.5 bg-primary rounded-full border-2 border-white dark:border-[#221013]"></span>
-          </button>
+          
+          {/* The Dynamic Cart Button (Home Style - Relative needed for badge positioning) */}
+          <div className="relative">
+             <CartButton isHomeTheme={true} />
+          </div>
+
           <button className="flex items-center justify-center size-10 bg-background-light dark:bg-[#33181c] rounded-lg hover:bg-gray-100 dark:hover:bg-[#452026] transition-colors cursor-pointer">
             <span className="material-symbols-outlined text-[20px] text-[#181112] dark:text-white">person</span>
           </button>
