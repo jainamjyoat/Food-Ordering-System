@@ -6,10 +6,13 @@ import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const isMenuPage = pathname === "/menu";
   const { totalItems } = useCart();
 
-  // Helper to highlight active links
+  // Define Page States
+  const isCheckoutPage = pathname === "/cart";
+  const isMenuPage = pathname === "/menu";
+
+  // Helper for active link styling
   const getLinkClass = (path: string) => {
     const isActive = pathname === path;
     return isActive 
@@ -17,7 +20,7 @@ export default function Navbar() {
       : "text-[#181112] dark:text-gray-200 font-semibold hover:text-primary transition-colors";
   };
 
-  // Reusable Cart Button Component with Link
+  // Reusable Cart Button (Only shown on non-checkout pages)
   const CartButton = ({ isHomeTheme = false }) => (
     <Link href="/cart">
       <button className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors shadow-lg cursor-pointer ${
@@ -26,9 +29,7 @@ export default function Navbar() {
           : "bg-primary hover:bg-red-600 text-white shadow-primary/20"
       }`}>
         <span className="material-symbols-outlined text-[20px]">shopping_cart</span>
-        
         {isHomeTheme ? (
-           // Home Style: Icon only + Badge
            <>
              {totalItems > 0 && (
                <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1 bg-primary text-white text-xs font-bold rounded-full border-2 border-white dark:border-[#221013]">
@@ -37,87 +38,86 @@ export default function Navbar() {
              )}
            </>
         ) : (
-           // Menu Style: Full Text "Cart (0)"
            <span className="text-sm font-bold">Cart ({totalItems})</span>
         )}
       </button>
     </Link>
   );
 
-  // --- MENU PAGE NAVBAR ---
-  if (isMenuPage) {
+  // ---------------------------------------------------------
+  // 1. CHECKOUT NAVBAR (Specific to /cart page)
+  // ---------------------------------------------------------
+  if (isCheckoutPage) {
     return (
       <header className="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#1a0b0d]/90 backdrop-blur-md border-b border-[#f4f0f1] dark:border-[#3a1d21]">
         <div className="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-4 text-[#181112] dark:text-white">
-            <div className="size-10 bg-primary/10 rounded-full flex items-center justify-center text-primary">
-              <span className="material-symbols-outlined text-[24px]">restaurant</span>
-            </div>
-            <h2 className="text-xl font-extrabold tracking-tight">FoodOrder</h2>
-          </Link>
           
-          <nav className="hidden md:flex items-center gap-8">
-            <Link className={getLinkClass("/")} href="/">Home</Link>
-            <Link className={getLinkClass("/menu")} href="/menu">Menu</Link>
-            <a className="text-[#181112] dark:text-gray-200 text-sm font-medium hover:text-primary transition-colors" href="#">Orders</a>
-            <a className="text-[#181112] dark:text-gray-200 text-sm font-medium hover:text-primary transition-colors" href="#">Restaurants</a>
-          </nav>
-
-          <div className="flex items-center gap-6">
-            <button className="relative p-2 text-[#181112] dark:text-white hover:bg-gray-100 dark:hover:bg-[#33181c] rounded-full transition-colors cursor-pointer">
-              <span className="material-symbols-outlined">notifications</span>
-            </button>
-            
-            {/* Menu Style Cart Button (Red) */}
-            <CartButton isHomeTheme={false} />
-
-            <div 
-              className="size-9 rounded-full bg-cover bg-center border-2 border-white shadow-sm cursor-pointer" 
-              style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuATvQn9vyCe_MOlfQ0RbZTXFrxt9StE6kDuGp9BpMUsyFQ_YmCDCEz-Gy5puDjfZIofW77RZNduz-vtX_HOsEkNRtDiw6tuG7vWURODfv_MoDW9WaP2T2VkmvvKu41MxUBMCSvPiP7VgPFYIDKeEEwwJB-y4WKAbEFHfhWM97XmiwEQYUN6URJTq0_WmE2GceN5auD8woB1MeMESyZ1xNLbdASxRzjY5DgUEoeTBMq6o7fNa9JInYAaf83Ah87gwrc7_be-QTqRIMYm')" }}
-            ></div>
+          {/* Left: Back Button & Title */}
+          <div className="flex items-center gap-4">
+            <Link href="/menu" className="size-10 bg-primary/10 rounded-full flex items-center justify-center text-primary transition-colors hover:bg-primary/20">
+              <span className="material-symbols-outlined text-[28px]">arrow_back</span>
+            </Link>
+            <div className="flex items-center gap-3">
+              <div className="size-8 bg-primary/10 rounded-full flex items-center justify-center text-primary hidden sm:flex">
+                <span className="material-symbols-outlined text-[20px]">lunch_dining</span>
+              </div>
+              <h2 className="text-[#181112] dark:text-white text-xl md:text-2xl font-extrabold tracking-tight">Checkout</h2>
+            </div>
           </div>
+
+          {/* Right: Progress Steps */}
+          <div className="flex items-center gap-3">
+            <div className="text-sm font-semibold text-gray-500 dark:text-gray-400 hidden sm:block">Step 2 of 3</div>
+            <div className="flex gap-1">
+              <div className="h-1.5 w-8 bg-primary rounded-full"></div>
+              <div className="h-1.5 w-8 bg-primary rounded-full"></div>
+              <div className="h-1.5 w-8 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+            </div>
+          </div>
+
         </div>
       </header>
     );
   }
 
-  // --- HOME PAGE NAVBAR ---
+  // ---------------------------------------------------------
+  // 2. STANDARD NAVBAR (Home, Menu, etc.)
+  // ---------------------------------------------------------
   return (
     <header className="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#1a0b0d]/90 backdrop-blur-md border-b border-[#f4f0f1] dark:border-[#3a1d21]">
       <div className="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-4">
+        
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-4 text-[#181112] dark:text-white">
           <div className="size-10 bg-primary/10 rounded-full flex items-center justify-center text-primary">
-            <span className="material-symbols-outlined text-[28px]">lunch_dining</span>
+            <span className="material-symbols-outlined text-[24px]">restaurant</span>
           </div>
-          <h2 className="text-[#181112] dark:text-white text-2xl font-extrabold tracking-tight">
-            FoodDelivery
-          </h2>
+          <h2 className="text-xl font-extrabold tracking-tight">FoodOrder</h2>
         </Link>
-
+        
+        {/* Standard Links: Home, Menu, Orders, Restaurants */}
         <nav className="hidden md:flex items-center gap-8">
-          <Link className={getLinkClass("/") + " text-sm"} href="/">Home</Link>
-          <Link className={getLinkClass("/menu") + " text-sm"} href="/menu">Menu</Link>
-          <a className="text-[#181112] dark:text-gray-200 text-sm font-medium hover:text-primary transition-colors" href="#">Deals</a>
-          <a className="text-[#181112] dark:text-gray-200 text-sm font-medium hover:text-primary transition-colors" href="#">Partner with us</a>
+          <Link className={getLinkClass("/")} href="/">Home</Link>
+          <Link className={getLinkClass("/menu")} href="/menu">Menu</Link>
+          <a className="text-[#181112] dark:text-gray-200 text-sm font-medium hover:text-primary transition-colors" href="#">Orders</a>
+          <a className="text-[#181112] dark:text-gray-200 text-sm font-medium hover:text-primary transition-colors" href="#">Restaurants</a>
         </nav>
 
-        <div className="flex items-center gap-3">
-          <button className="hidden sm:flex items-center gap-2 px-4 h-10 bg-background-light dark:bg-[#33181c] rounded-lg hover:bg-gray-100 dark:hover:bg-[#452026] transition-colors cursor-pointer">
-            <span className="material-symbols-outlined text-[20px] text-[#181112] dark:text-white">search</span>
-            <span className="text-sm font-semibold text-[#181112] dark:text-white hidden lg:inline">Search</span>
+        {/* Right Actions */}
+        <div className="flex items-center gap-6">
+          <button className="relative p-2 text-[#181112] dark:text-white hover:bg-gray-100 dark:hover:bg-[#33181c] rounded-full transition-colors cursor-pointer">
+            <span className="material-symbols-outlined">notifications</span>
           </button>
           
-          {/* Home Style Cart Button (Icon + Badge) */}
+          {/* Dynamic Cart Button (Style depends on page) */}
           <div className="relative">
-             <CartButton isHomeTheme={true} />
+             <CartButton isHomeTheme={!isMenuPage} />
           </div>
 
-          <button className="flex items-center justify-center size-10 bg-background-light dark:bg-[#33181c] rounded-lg hover:bg-gray-100 dark:hover:bg-[#452026] transition-colors cursor-pointer">
-            <span className="material-symbols-outlined text-[20px] text-[#181112] dark:text-white">person</span>
-          </button>
-          <button className="hidden lg:flex px-6 h-10 bg-primary text-white text-sm font-bold rounded-lg items-center justify-center hover:bg-red-600 transition-colors shadow-lg shadow-primary/20 cursor-pointer">
-            Sign Up
-          </button>
+          <div 
+            className="size-9 rounded-full bg-cover bg-center border-2 border-white shadow-sm cursor-pointer" 
+            style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuATvQn9vyCe_MOlfQ0RbZTXFrxt9StE6kDuGp9BpMUsyFQ_YmCDCEz-Gy5puDjfZIofW77RZNduz-vtX_HOsEkNRtDiw6tuG7vWURODfv_MoDW9WaP2T2VkmvvKu41MxUBMCSvPiP7VgPFYIDKeEEwwJB-y4WKAbEFHfhWM97XmiwEQYUN6URJTq0_WmE2GceN5auD8woB1MeMESyZ1xNLbdASxRzjY5DgUEoeTBMq6o7fNa9JInYAaf83Ah87gwrc7_be-QTqRIMYm')" }}
+          ></div>
         </div>
       </div>
     </header>

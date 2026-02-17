@@ -31,7 +31,7 @@ export default function CheckoutPage() {
     <div className="bg-background-light dark:bg-background-dark text-[#181112] dark:text-white min-h-screen flex flex-col font-sans">
       
       {/* Header (Simplified for Checkout flow) */}
-      <header className="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#1a0b0d]/90 backdrop-blur-md border-b border-[#f4f0f1] dark:border-[#3a1d21]">
+      {/* <header className="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#1a0b0d]/90 backdrop-blur-md border-b border-[#f4f0f1] dark:border-[#3a1d21]">
         <div className="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/menu" className="size-10 bg-primary/10 rounded-full flex items-center justify-center text-primary transition-colors hover:bg-primary/20">
@@ -53,7 +53,7 @@ export default function CheckoutPage() {
             </div>
           </div>
         </div>
-      </header>
+      </header> */}
 
       <main className="flex-grow w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
