@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import SmoothScrolling from "./components/SmoothScrolling"; // Adjust path if needed
 
 export const metadata: Metadata = {
   title: "FoodDelivery",
@@ -14,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Load Fonts and Icons manually here to avoid CSS errors */}
+        {/* Fonts and Icons loaded here to avoid CSS import errors */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link 
@@ -27,6 +28,7 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <SmoothScrolling />
         {children}
       </body>
     </html>
