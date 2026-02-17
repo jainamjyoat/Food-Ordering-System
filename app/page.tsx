@@ -1,73 +1,8 @@
 import React from 'react';
 
-export default function FoodDelivery() {
+export default function Home() {
   return (
-    <div className="bg-background-light dark:bg-background-dark text-[#181112] dark:text-white min-h-screen flex flex-col font-sans">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#1a0b0d]/90 backdrop-blur-md border-b border-[#f4f0f1] dark:border-[#3a1d21]">
-        <div className="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="size-10 bg-primary/10 rounded-full flex items-center justify-center text-primary">
-              <span className="material-symbols-outlined text-[28px]">lunch_dining</span>
-            </div>
-            <h2 className="text-[#181112] dark:text-white text-2xl font-extrabold tracking-tight">
-              FoodDelivery
-            </h2>
-          </div>
-          <nav className="hidden md:flex items-center gap-8">
-            <a
-              className="text-[#181112] dark:text-gray-200 text-sm font-semibold hover:text-primary transition-colors"
-              href="#"
-            >
-              Home
-            </a>
-            <a
-              className="text-[#181112] dark:text-gray-200 text-sm font-medium hover:text-primary transition-colors"
-              href="#"
-            >
-              Menu
-            </a>
-            <a
-              className="text-[#181112] dark:text-gray-200 text-sm font-medium hover:text-primary transition-colors"
-              href="#"
-            >
-              Deals
-            </a>
-            <a
-              className="text-[#181112] dark:text-gray-200 text-sm font-medium hover:text-primary transition-colors"
-              href="#"
-            >
-              Partner with us
-            </a>
-          </nav>
-          <div className="flex items-center gap-3">
-            <button className="hidden sm:flex items-center gap-2 px-4 h-10 bg-background-light dark:bg-[#33181c] rounded-lg hover:bg-gray-100 dark:hover:bg-[#452026] transition-colors">
-              <span className="material-symbols-outlined text-[20px] text-[#181112] dark:text-white">
-                search
-              </span>
-              <span className="text-sm font-semibold text-[#181112] dark:text-white hidden lg:inline">
-                Search
-              </span>
-            </button>
-            <button className="relative flex items-center justify-center size-10 bg-background-light dark:bg-[#33181c] rounded-lg hover:bg-gray-100 dark:hover:bg-[#452026] transition-colors group">
-              <span className="material-symbols-outlined text-[20px] text-[#181112] dark:text-white">
-                shopping_cart
-              </span>
-              <span className="absolute top-1 right-1 size-2.5 bg-primary rounded-full border-2 border-white dark:border-[#221013]"></span>
-            </button>
-            <button className="flex items-center justify-center size-10 bg-background-light dark:bg-[#33181c] rounded-lg hover:bg-gray-100 dark:hover:bg-[#452026] transition-colors">
-              <span className="material-symbols-outlined text-[20px] text-[#181112] dark:text-white">
-                person
-              </span>
-            </button>
-            <button className="hidden lg:flex px-6 h-10 bg-primary text-white text-sm font-bold rounded-lg items-center justify-center hover:bg-red-600 transition-colors shadow-lg shadow-primary/20">
-              Sign Up
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main className="flex-grow w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-10">
+    <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-10">
         {/* Hero Section */}
         <section className="relative w-full rounded-2xl overflow-hidden min-h-[500px] flex items-center justify-center bg-gray-900 group">
           {/* Background Image */}
@@ -119,115 +54,123 @@ export default function FoodDelivery() {
 
         {/* Categories Section */}
         <section>
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-bold text-[#181112] dark:text-white">
               Explore by Category
             </h2>
             <div className="flex gap-2">
-              <button className="size-8 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-[#33181c] transition-colors text-gray-600 dark:text-gray-300">
+              <button className="size-8 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-[#33181c] transition-colors text-gray-600 dark:text-gray-300 cursor-pointer">
                 <span className="material-symbols-outlined text-sm">arrow_back</span>
               </button>
-              <button className="size-8 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-[#33181c] transition-colors text-gray-600 dark:text-gray-300">
+              <button className="size-8 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-[#33181c] transition-colors text-gray-600 dark:text-gray-300 cursor-pointer">
                 <span className="material-symbols-outlined text-sm">arrow_forward</span>
               </button>
             </div>
           </div>
-          <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-4">
+          
+          <div className="flex gap-8 overflow-x-auto hide-scrollbar pb-6 px-1">
             {/* Category Item: Pizza */}
-            <a className="group flex flex-col items-center gap-3 min-w-[100px] cursor-pointer" href="#">
-              <div className="size-24 rounded-full bg-white dark:bg-[#33181c] border border-gray-100 dark:border-[#452026] shadow-sm flex items-center justify-center group-hover:shadow-md group-hover:border-primary/30 transition-all duration-300 overflow-hidden relative">
-                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <a className="group flex flex-col items-center gap-4 min-w-[120px] cursor-pointer" href="#">
+              <div className="size-28 rounded-full bg-white dark:bg-[#33181c] border-2 border-white dark:border-[#452026] shadow-lg flex items-center justify-center group-hover:shadow-xl group-hover:border-primary transition-all duration-300 overflow-hidden relative">
+                {/* Dark Overlay on Hover for better text contrast/style */}
+                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
                 <img
                   alt="Fresh pizza slice"
-                  className="w-16 h-16 object-contain drop-shadow-md transform group-hover:scale-110 transition-transform"
+                  className="w-full h-full object-cover transform group-hover:scale-115 transition-transform duration-500"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyZySTRe3YMTgDaRfI0fhvc--1WYCdM5TNNtPEbJeecgBfaI3YS3u-aoCsVSk9MfJYaIZpHziMnXKOd3swcx4BXIrwtDLU1mZJotvuRi0aNKmKtMQQJjk3p4J3mUW0j-7ObPb55z1qM4WNskWwd_URICVy8NtO4H_ks-1ZWnVeltvMF9eyUyuY44Zof8wAnhEEAuMhfWZNTLO4MXoqxMmWhRX2xQhwmJIVkLLBgVt6EHB3dZ0DkSDU7HRmHq8ncmRnXp0PTyLL5uRn"
                 />
               </div>
-              <span className="font-semibold text-sm text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors">
+              <span className="font-bold text-base text-gray-800 dark:text-gray-100 group-hover:text-primary transition-colors">
                 Pizza
               </span>
             </a>
+
             {/* Category Item: Burger */}
-            <a className="group flex flex-col items-center gap-3 min-w-[100px] cursor-pointer" href="#">
-              <div className="size-24 rounded-full bg-white dark:bg-[#33181c] border border-gray-100 dark:border-[#452026] shadow-sm flex items-center justify-center group-hover:shadow-md group-hover:border-primary/30 transition-all duration-300 overflow-hidden relative">
-                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <a className="group flex flex-col items-center gap-4 min-w-[120px] cursor-pointer" href="#">
+              <div className="size-28 rounded-full bg-white dark:bg-[#33181c] border-2 border-white dark:border-[#452026] shadow-lg flex items-center justify-center group-hover:shadow-xl group-hover:border-primary transition-all duration-300 overflow-hidden relative">
+                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
                 <img
                   alt="Juicy beef burger"
-                  className="w-16 h-16 object-contain drop-shadow-md transform group-hover:scale-110 transition-transform"
+                  className="w-full h-full object-cover transform group-hover:scale-115 transition-transform duration-500"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMBkdKA7ChxhbIxIHpAvFihWyNbBNLa9qeBUQgq4dYHYikFDLVAQ0TbUrenO_RJj-DcT_1Ji1iiiJFTHMnvs5B_2BY9QsHl_B0k9LjLO2AJG_23l-62LYPOkEHkVR13mnOPYkfAWM1Zr3dj6PnaQwtLdMq4ZzaLcStW6zNgpReURjYY8UFzKjXs0b2zhbz_z6_-wKj3U5t7nGvXfW2hr7i_QjSAnWN8QY7_SmhbF-LLFCit3DunB0PkOcT9ORPRyI6n-utDQrS4dTg"
                 />
               </div>
-              <span className="font-semibold text-sm text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors">
+              <span className="font-bold text-base text-gray-800 dark:text-gray-100 group-hover:text-primary transition-colors">
                 Burger
               </span>
             </a>
+
             {/* Category Item: Sushi */}
-            <a className="group flex flex-col items-center gap-3 min-w-[100px] cursor-pointer" href="#">
-              <div className="size-24 rounded-full bg-white dark:bg-[#33181c] border border-gray-100 dark:border-[#452026] shadow-sm flex items-center justify-center group-hover:shadow-md group-hover:border-primary/30 transition-all duration-300 overflow-hidden relative">
-                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <a className="group flex flex-col items-center gap-4 min-w-[120px] cursor-pointer" href="#">
+              <div className="size-28 rounded-full bg-white dark:bg-[#33181c] border-2 border-white dark:border-[#452026] shadow-lg flex items-center justify-center group-hover:shadow-xl group-hover:border-primary transition-all duration-300 overflow-hidden relative">
+                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
                 <img
                   alt="Fresh sushi rolls"
-                  className="w-16 h-16 object-contain drop-shadow-md transform group-hover:scale-110 transition-transform"
+                  className="w-full h-full object-cover transform group-hover:scale-115 transition-transform duration-500"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuACIZKUuukRSMl-x1CEXE-n87HOQjWDCRREZZ4QegoIIavNqzpsfEwoTUl2fUEuKJpUoC8nqtdtZsDKLopYbQaBmOERm9M3QX3TgzTeuTx2EpXvGY7jpnTBAI-hEuo_MlQ8FrNOL6EKus8Ev-iDpCNzQXvItMkJA1I8EDzZz4ZtHIgAqxK7L42Z85jpYkn0tBXFjCgFtJmPJ5bROyLleUPIrpFM6elm07xwTFAzg-2KXF3SvN8UQrvosnRRLUQ_b-n9ilDnzc-FbpN2"
                 />
               </div>
-              <span className="font-semibold text-sm text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors">
+              <span className="font-bold text-base text-gray-800 dark:text-gray-100 group-hover:text-primary transition-colors">
                 Sushi
               </span>
             </a>
+
             {/* Category Item: Asian */}
-            <a className="group flex flex-col items-center gap-3 min-w-[100px] cursor-pointer" href="#">
-              <div className="size-24 rounded-full bg-white dark:bg-[#33181c] border border-gray-100 dark:border-[#452026] shadow-sm flex items-center justify-center group-hover:shadow-md group-hover:border-primary/30 transition-all duration-300 overflow-hidden relative">
-                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <a className="group flex flex-col items-center gap-4 min-w-[120px] cursor-pointer" href="#">
+              <div className="size-28 rounded-full bg-white dark:bg-[#33181c] border-2 border-white dark:border-[#452026] shadow-lg flex items-center justify-center group-hover:shadow-xl group-hover:border-primary transition-all duration-300 overflow-hidden relative">
+                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
                 <img
                   alt="Bowl of ramen"
-                  className="w-16 h-16 object-contain drop-shadow-md transform group-hover:scale-110 transition-transform"
+                  className="w-full h-full object-cover transform group-hover:scale-115 transition-transform duration-500"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPt3J2tEX5gQYbW7SwcR0FEwOP6-0gqbn6h44MtQq7gHIOTBuJ3CaOid-0KVxyybudJxrBDOo3kC57K7gUxuX1ZAfWTNB-sxMxn87o_rGVLzUGH5xl7h6TP1sQIOg4GZxN8FUbLyVsyYZ4YVIBuQwwrcVs3J6rhQNPG1ZaowCUEGyWkK7xn9MZigEyamCmfE_8iZf-zytEOT60DzcTG7vbRZZ9RtjJEuMvC_523WRkdZhkYqUta818v-OmHvOKkJLCbuB6mIFVJwgk"
                 />
               </div>
-              <span className="font-semibold text-sm text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors">
+              <span className="font-bold text-base text-gray-800 dark:text-gray-100 group-hover:text-primary transition-colors">
                 Asian
               </span>
             </a>
+
             {/* Category Item: Mexican */}
-            <a className="group flex flex-col items-center gap-3 min-w-[100px] cursor-pointer" href="#">
-              <div className="size-24 rounded-full bg-white dark:bg-[#33181c] border border-gray-100 dark:border-[#452026] shadow-sm flex items-center justify-center group-hover:shadow-md group-hover:border-primary/30 transition-all duration-300 overflow-hidden relative">
-                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <a className="group flex flex-col items-center gap-4 min-w-[120px] cursor-pointer" href="#">
+              <div className="size-28 rounded-full bg-white dark:bg-[#33181c] border-2 border-white dark:border-[#452026] shadow-lg flex items-center justify-center group-hover:shadow-xl group-hover:border-primary transition-all duration-300 overflow-hidden relative">
+                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
                 <img
                   alt="Tacos"
-                  className="w-16 h-16 object-contain drop-shadow-md transform group-hover:scale-110 transition-transform"
+                  className="w-full h-full object-cover transform group-hover:scale-115 transition-transform duration-500"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuB21Ittqp89aKPzMXYXXuEKig5o5Zi0JetnND2p6b_gJKg5Zc5svmoEmIZ_9nknUk8hQnFy9Sr3CHerhLWuyJiokEDJ4caYUCvrMbs6JTzx2keHLx4BK5tsm-tQcKAmDcRKuiDJYudQel7Dv4-e30hxESQ5r-_BokYJ0idKV5NdsycwBDuDxV6_h7wwkwjEzUAMotCyImmqia4bLOXxoFBHitCdQJlhQy55LEt9tH33OhcVvviwN-eYfYgYS2kWfuOwu39OBNlYy0zn"
                 />
               </div>
-              <span className="font-semibold text-sm text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors">
+              <span className="font-bold text-base text-gray-800 dark:text-gray-100 group-hover:text-primary transition-colors">
                 Mexican
               </span>
             </a>
+
             {/* Category Item: Healthy */}
-            <a className="group flex flex-col items-center gap-3 min-w-[100px] cursor-pointer" href="#">
-              <div className="size-24 rounded-full bg-white dark:bg-[#33181c] border border-gray-100 dark:border-[#452026] shadow-sm flex items-center justify-center group-hover:shadow-md group-hover:border-primary/30 transition-all duration-300 overflow-hidden relative">
-                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <a className="group flex flex-col items-center gap-4 min-w-[120px] cursor-pointer" href="#">
+              <div className="size-28 rounded-full bg-white dark:bg-[#33181c] border-2 border-white dark:border-[#452026] shadow-lg flex items-center justify-center group-hover:shadow-xl group-hover:border-primary transition-all duration-300 overflow-hidden relative">
+                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
                 <img
                   alt="Healthy salad bowl"
-                  className="w-16 h-16 object-contain drop-shadow-md transform group-hover:scale-110 transition-transform"
+                  className="w-full h-full object-cover transform group-hover:scale-115 transition-transform duration-500"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuDb5_uX6QjW0-5D5zVMk_HJeVc12kUpi5ixAJTymEnEibcr3Q6sVx2RP1YaaGODDXswSDejX4nDdDVFod0q0a9awtvzZNHHm0jdl6P2e7FSP0ck7oLPdD944xCRyoqw8ukhV8cGL05JvPdyxbDuNN50d6pei384h8byWdELX0attfUjgSDIRBby8Ah01GSaUZ6eRBTpajJerHlfh_Dh0jLT4OCtLOUxKA2TuEwtRRlZ-FfTQqp4gy9H1od7Na_S_XY7wfbRF5445evr"
                 />
               </div>
-              <span className="font-semibold text-sm text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors">
+              <span className="font-bold text-base text-gray-800 dark:text-gray-100 group-hover:text-primary transition-colors">
                 Healthy
               </span>
             </a>
+
             {/* Category Item: Dessert */}
-            <a className="group flex flex-col items-center gap-3 min-w-[100px] cursor-pointer" href="#">
-              <div className="size-24 rounded-full bg-white dark:bg-[#33181c] border border-gray-100 dark:border-[#452026] shadow-sm flex items-center justify-center group-hover:shadow-md group-hover:border-primary/30 transition-all duration-300 overflow-hidden relative">
-                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <a className="group flex flex-col items-center gap-4 min-w-[120px] cursor-pointer" href="#">
+              <div className="size-28 rounded-full bg-white dark:bg-[#33181c] border-2 border-white dark:border-[#452026] shadow-lg flex items-center justify-center group-hover:shadow-xl group-hover:border-primary transition-all duration-300 overflow-hidden relative">
+                <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
                 <img
                   alt="Dessert cake"
-                  className="w-16 h-16 object-contain drop-shadow-md transform group-hover:scale-110 transition-transform"
+                  className="w-full h-full object-cover transform group-hover:scale-115 transition-transform duration-500"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcJ7iXatkkBsSdEl7Bh1-dDSPcMEpa1XQ1UkJodywcufhB7acsQnmzL_EaaLTXGvxvmxnLZ2DJrs_ucFhUkDQeQMC5TxZMUjTcWV2sxNicjQRGF4Hm4iDvRdO99OmpAZGimZ0thuaJ6L68ryBHoWs3U0ulD2LrYUjYse89j7l4xiZp6fLGcgBnGt1v2DWgMNiS7by8rh9C__l9UN0WUc9lDALm7Y66vgDfaxBTlZRnT5cajjfqReZHSx1vvQpCOlgof60GPFLmA7MQ"
                 />
               </div>
-              <span className="font-semibold text-sm text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors">
+              <span className="font-bold text-base text-gray-800 dark:text-gray-100 group-hover:text-primary transition-colors">
                 Dessert
               </span>
             </a>
@@ -296,7 +239,7 @@ export default function FoodDelivery() {
                 <div className="absolute top-3 left-3 bg-white dark:bg-black/80 px-2 py-1 rounded text-xs font-bold text-[#181112] dark:text-white shadow-sm">
                   <span className="text-green-600">Free Delivery</span>
                 </div>
-                <button className="absolute top-3 right-3 size-8 rounded-full bg-white/80 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center text-gray-500 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors">
+                <button className="absolute top-3 right-3 size-8 rounded-full bg-white/80 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center text-gray-500 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors cursor-pointer">
                   <span className="material-symbols-outlined text-[18px]">favorite</span>
                 </button>
               </div>
@@ -349,7 +292,7 @@ export default function FoodDelivery() {
                     Trending
                   </span>
                 </div>
-                <button className="absolute top-3 right-3 size-8 rounded-full bg-white/80 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center text-gray-500 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors">
+                <button className="absolute top-3 right-3 size-8 rounded-full bg-white/80 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center text-gray-500 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors cursor-pointer">
                   <span className="material-symbols-outlined text-[18px]">favorite</span>
                 </button>
               </div>
@@ -394,7 +337,7 @@ export default function FoodDelivery() {
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaxzJxFM72u5Km_uJDBhs5qdqljpZ_NvZSiQTsJGYQxjOE8P7jTJ32uOBfbooJnmZU9k4HcTMqnEUr56oL2LFSWnsyEgUjTWAbkbZk0SCAcdkPeh6_ejTZHt-JcLWdvxiUZXcg5ltsQC1isO4RTdrP080abg3v0lrVIJ8gqBsF0Gqlw47db4ourfbCakd_J6tlGYgREw5SHBnjlo8F3lejbQsxylewi0DUoYsZ45no8MHasx1K_BQZEeGhS9WYntIikVErAxDcR_at"
                 />
-                <button className="absolute top-3 right-3 size-8 rounded-full bg-white/80 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center text-gray-500 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors">
+                <button className="absolute top-3 right-3 size-8 rounded-full bg-white/80 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center text-gray-500 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors cursor-pointer">
                   <span className="material-symbols-outlined text-[18px]">favorite</span>
                 </button>
               </div>
@@ -442,7 +385,7 @@ export default function FoodDelivery() {
                 <div className="absolute top-3 left-3 bg-white dark:bg-black/80 px-2 py-1 rounded text-xs font-bold text-[#181112] dark:text-white shadow-sm">
                   <span className="text-green-600">Free Delivery</span>
                 </div>
-                <button className="absolute top-3 right-3 size-8 rounded-full bg-white/80 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center text-gray-500 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors">
+                <button className="absolute top-3 right-3 size-8 rounded-full bg-white/80 dark:bg-black/50 backdrop-blur-sm flex items-center justify-center text-gray-500 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors cursor-pointer">
                   <span className="material-symbols-outlined text-[18px]">favorite</span>
                 </button>
               </div>
@@ -572,134 +515,6 @@ export default function FoodDelivery() {
             </div>
           </div>
         </section>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-white dark:bg-[#1a0b0d] border-t border-[#f4f0f1] dark:border-[#3a1d21] mt-12 py-12">
-        <div className="max-w-[1440px] mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="col-span-1 md:col-span-1">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="size-8 bg-primary/10 rounded-full flex items-center justify-center text-primary">
-                  <span className="material-symbols-outlined text-[20px]">
-                    lunch_dining
-                  </span>
-                </div>
-                <h3 className="text-xl font-extrabold text-[#181112] dark:text-white">
-                  FoodDelivery
-                </h3>
-              </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                The best local restaurants delivered to your doorstep. Fresh,
-                fast, and delicious.
-              </p>
-              <div className="flex gap-4">
-                <a
-                  className="text-gray-400 hover:text-primary transition-colors"
-                  href="#"
-                >
-                  <span className="material-symbols-outlined">
-                    social_leaderboard
-                  </span>
-                </a>
-                <a
-                  className="text-gray-400 hover:text-primary transition-colors"
-                  href="#"
-                >
-                  <span className="material-symbols-outlined">public</span>
-                </a>{' '}
-                {/* placeholder for twitter/X */}
-                <a
-                  className="text-gray-400 hover:text-primary transition-colors"
-                  href="#"
-                >
-                  <span className="material-symbols-outlined">photo_camera</span>
-                </a>{' '}
-                {/* placeholder for instagram */}
-              </div>
-            </div>
-            <div>
-              <h4 className="font-bold text-[#181112] dark:text-white mb-4">
-                Company
-              </h4>
-              <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-                <li>
-                  <a className="hover:text-primary transition-colors" href="#">
-                    About Us
-                  </a>
-                </li>
-                <li>
-                  <a className="hover:text-primary transition-colors" href="#">
-                    Careers
-                  </a>
-                </li>
-                <li>
-                  <a className="hover:text-primary transition-colors" href="#">
-                    Blog
-                  </a>
-                </li>
-                <li>
-                  <a className="hover:text-primary transition-colors" href="#">
-                    Gift Cards
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold text-[#181112] dark:text-white mb-4">
-                Support
-              </h4>
-              <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-                <li>
-                  <a className="hover:text-primary transition-colors" href="#">
-                    Help Center
-                  </a>
-                </li>
-                <li>
-                  <a className="hover:text-primary transition-colors" href="#">
-                    Safety Center
-                  </a>
-                </li>
-                <li>
-                  <a className="hover:text-primary transition-colors" href="#">
-                    Community Guidelines
-                  </a>
-                </li>
-                <li>
-                  <a className="hover:text-primary transition-colors" href="#">
-                    Partner with Us
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold text-[#181112] dark:text-white mb-4">
-                Legal
-              </h4>
-              <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-                <li>
-                  <a className="hover:text-primary transition-colors" href="#">
-                    Terms of Service
-                  </a>
-                </li>
-                <li>
-                  <a className="hover:text-primary transition-colors" href="#">
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a className="hover:text-primary transition-colors" href="#">
-                    Cookie Policy
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-100 dark:border-gray-800 mt-12 pt-8 text-center text-sm text-gray-400">
-            © 2024 FoodDelivery Inc. All rights reserved.
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

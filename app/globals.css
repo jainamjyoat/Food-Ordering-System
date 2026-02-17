@@ -1,38 +1,46 @@
 @import "tailwindcss";
 
 :root {
-  /* --- Light Mode Defaults --- */
-  /* Exact hex from 'background-light' */
-  --background: #f8f6f6; 
-  /* Exact hex from text-[#181112] */
-  --foreground: #181112; 
+  /* Base variables */
+  --background: #f8f6f6;
+  --foreground: #181112;
 
-  /* --- Brand Colors --- */
-  /* Exact hex from 'primary' */
-  --color-primary: #ec1337; 
+  /* Custom Design Tokens */
+  --color-primary: #ec1337;
+  --color-primary-hover: #c90f2e;
   
-  /* --- Utility Variables --- */
   --color-background-light: #f8f6f6;
   --color-background-dark: #221013;
+  
+  --color-surface-light: #ffffff;
+  --color-surface-dark: #2d1619;
+  
+  --color-text-main: #181112;
+  --color-text-secondary: #896168;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Exact hex from 'background-dark' */
-    --background: #221013; 
+    --background: #221013;
     --foreground: #ffffff;
   }
 }
 
 @theme inline {
-  /* Bind variables to Tailwind utilities */
+  /* Map CSS variables to Tailwind classes */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
   
-  /* Custom names found in your HTML */
   --color-background-light: var(--color-background-light);
   --color-background-dark: var(--color-background-dark);
+  
+  --color-surface-light: var(--color-surface-light);
+  --color-surface-dark: var(--color-surface-dark);
+  
+  --color-text-main: var(--color-text-main);
+  --color-text-secondary: var(--color-text-secondary);
 
   /* Fonts */
   --font-sans: "Plus Jakarta Sans", "Arial", "Helvetica", "sans-serif";
@@ -45,6 +53,8 @@ body {
   font-family: var(--font-sans);
 }
 
+/* --- CUSTOM STYLES FROM YOUR HTML --- */
+
 /* Custom Scrollbar Utilities */
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
@@ -55,9 +65,54 @@ body {
   scrollbar-width: none;
 }
 
-/* ... existing code ... */
+/* Global Webkit Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
 
-/* LENIS SMOOTH SCROLL RECOMMENDED STYLES */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #e5e7eb;
+  border-radius: 20px;
+}
+
+/* Dark mode scrollbar thumb */
+@media (prefers-color-scheme: dark) {
+  ::-webkit-scrollbar-thumb {
+    background-color: #4b5563;
+  }
+}
+
+/* Range Slider Styling */
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: #ec1337;
+  cursor: pointer;
+  margin-top: -6px;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
+  cursor: pointer;
+  background: #e5e7eb;
+  border-radius: 2px;
+}
+
+/* Dark mode slider track */
+@media (prefers-color-scheme: dark) {
+  input[type=range]::-webkit-slider-runnable-track {
+    background: #374151;
+  }
+}
+
+/* Lenis Scroll Recommended Styles */
 html.lenis, html.lenis body {
   height: auto;
 }
