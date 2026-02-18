@@ -2,15 +2,21 @@
 import React from 'react';
 import Link from 'next/link';
 import { useCart } from '../context/CartContext';
+import { useRouter } from 'next/navigation';
 
 export default function CheckoutPage() {
-  const { cart, updateQuantity, totalPrice } = useCart();
+  const { cart, updateQuantity, totalPrice, placeOrder } = useCart();
+  const router = useRouter();
 
   // Calculations
   const DELIVERY_FEE = 4.99;
   const TAX_RATE = 0.08;
   const taxes = totalPrice * TAX_RATE;
   const finalTotal = totalPrice + taxes + (totalPrice > 0 ? DELIVERY_FEE : 0);
+  const handlePlaceOrder = () => {
+    placeOrder(); // Save to context and clear cart
+    router.push('/order-tracking'); // Go to tracking
+  };
 
   if (cart.length === 0) {
     return (
@@ -227,10 +233,13 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="p-6 pt-0 bg-gray-50/50 dark:bg-[#2a1418]">
-                  <Link href="/order-tracking" className="w-full bg-primary hover:bg-red-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/25 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 group">
-                    <span>Place Order</span>
-                    <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                  </Link>
+                  <button 
+                      onClick={handlePlaceOrder}
+                      className="w-full bg-primary hover:bg-red-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/25 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 group cursor-pointer"
+                    >
+                      <span>Place Order</span>
+                      <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                    </button>
                   <p className="text-center text-xs text-gray-400 mt-4">
                     By placing your order, you agree to our Terms of Service and Privacy Policy.
                   </p>
