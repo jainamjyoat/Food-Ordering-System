@@ -10,6 +10,7 @@ export default function Navbar() {
 
   // Define Page States
   const isCheckoutPage = pathname === "/cart";
+  const isTrackingPage = pathname === "/order-tracking";
   const isMenuPage = pathname === "/menu";
 
   // Helper for active link styling
@@ -20,7 +21,7 @@ export default function Navbar() {
       : "text-[#181112] dark:text-gray-200 font-semibold hover:text-primary transition-colors";
   };
 
-  // Reusable Cart Button (Only shown on non-checkout pages)
+  // Reusable Cart Button
   const CartButton = ({ isHomeTheme = false }) => (
     <Link href="/cart">
       <button className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors shadow-lg cursor-pointer ${
@@ -45,14 +46,43 @@ export default function Navbar() {
   );
 
   // ---------------------------------------------------------
-  // 1. CHECKOUT NAVBAR (Specific to /cart page)
+  // 1. ORDER TRACKING NAVBAR (Step 3/3)
+  // ---------------------------------------------------------
+  if (isTrackingPage) {
+    return (
+      <header className="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#1a0b0d]/90 backdrop-blur-md border-b border-[#f4f0f1] dark:border-[#3a1d21]">
+        <div className="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link href="/" className="size-10 bg-primary/10 rounded-full flex items-center justify-center text-primary transition-colors hover:bg-primary/20">
+              <span className="material-symbols-outlined text-[28px]">arrow_back</span>
+            </Link>
+            <div className="flex items-center gap-3">
+              <div className="size-8 bg-primary/10 rounded-full flex items-center justify-center text-primary hidden sm:flex">
+                <span className="material-symbols-outlined text-[20px]">lunch_dining</span>
+              </div>
+              <h2 className="text-[#181112] dark:text-white text-xl md:text-2xl font-extrabold tracking-tight">Order Status</h2>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="text-sm font-semibold text-gray-500 dark:text-gray-400 hidden sm:block">Step 3 of 3</div>
+            <div className="flex gap-1">
+              <div className="h-1.5 w-8 bg-primary rounded-full"></div>
+              <div className="h-1.5 w-8 bg-primary rounded-full"></div>
+              <div className="h-1.5 w-8 bg-primary rounded-full"></div>
+            </div>
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  // ---------------------------------------------------------
+  // 2. CHECKOUT NAVBAR (Step 2/3)
   // ---------------------------------------------------------
   if (isCheckoutPage) {
     return (
       <header className="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#1a0b0d]/90 backdrop-blur-md border-b border-[#f4f0f1] dark:border-[#3a1d21]">
         <div className="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
-          
-          {/* Left: Back Button & Title */}
           <div className="flex items-center gap-4">
             <Link href="/menu" className="size-10 bg-primary/10 rounded-full flex items-center justify-center text-primary transition-colors hover:bg-primary/20">
               <span className="material-symbols-outlined text-[28px]">arrow_back</span>
@@ -64,8 +94,6 @@ export default function Navbar() {
               <h2 className="text-[#181112] dark:text-white text-xl md:text-2xl font-extrabold tracking-tight">Checkout</h2>
             </div>
           </div>
-
-          {/* Right: Progress Steps */}
           <div className="flex items-center gap-3">
             <div className="text-sm font-semibold text-gray-500 dark:text-gray-400 hidden sm:block">Step 2 of 3</div>
             <div className="flex gap-1">
@@ -74,20 +102,18 @@ export default function Navbar() {
               <div className="h-1.5 w-8 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
             </div>
           </div>
-
         </div>
       </header>
     );
   }
 
   // ---------------------------------------------------------
-  // 2. STANDARD NAVBAR (Home, Menu, etc.)
+  // 3. STANDARD NAVBAR (Home, Menu, etc.)
   // ---------------------------------------------------------
   return (
     <header className="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#1a0b0d]/90 backdrop-blur-md border-b border-[#f4f0f1] dark:border-[#3a1d21]">
       <div className="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
         
-        {/* Logo */}
         <Link href="/" className="flex items-center gap-4 text-[#181112] dark:text-white">
           <div className="size-10 bg-primary/10 rounded-full flex items-center justify-center text-primary">
             <span className="material-symbols-outlined text-[24px]">restaurant</span>
@@ -95,7 +121,6 @@ export default function Navbar() {
           <h2 className="text-xl font-extrabold tracking-tight">FoodOrder</h2>
         </Link>
         
-        {/* Standard Links: Home, Menu, Orders, Restaurants */}
         <nav className="hidden md:flex items-center gap-8">
           <Link className={getLinkClass("/")} href="/">Home</Link>
           <Link className={getLinkClass("/menu")} href="/menu">Menu</Link>
@@ -103,13 +128,11 @@ export default function Navbar() {
           <a className="text-[#181112] dark:text-gray-200 text-sm font-medium hover:text-primary transition-colors" href="#">Restaurants</a>
         </nav>
 
-        {/* Right Actions */}
         <div className="flex items-center gap-6">
           <button className="relative p-2 text-[#181112] dark:text-white hover:bg-gray-100 dark:hover:bg-[#33181c] rounded-full transition-colors cursor-pointer">
             <span className="material-symbols-outlined">notifications</span>
           </button>
           
-          {/* Dynamic Cart Button (Style depends on page) */}
           <div className="relative">
              <CartButton isHomeTheme={!isMenuPage} />
           </div>

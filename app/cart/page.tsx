@@ -227,10 +227,10 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="p-6 pt-0 bg-gray-50/50 dark:bg-[#2a1418]">
-                  <button className="w-full bg-primary hover:bg-red-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/25 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 group">
+                  <Link href="/order-tracking" className="w-full bg-primary hover:bg-red-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/25 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 group">
                     <span>Place Order</span>
                     <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                  </button>
+                  </Link>
                   <p className="text-center text-xs text-gray-400 mt-4">
                     By placing your order, you agree to our Terms of Service and Privacy Policy.
                   </p>
