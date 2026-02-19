@@ -3,7 +3,8 @@ import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import SmoothScrolling from "./components/SmoothScrolling";
-import { CartProvider } from "./context/CartContext"; // Import the provider
+import { CartProvider } from "./context/CartContext";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 export const metadata: Metadata = {
   title: "FoodDelivery",
@@ -30,14 +31,16 @@ export default function RootLayout({
         />
       </head>
       <body className="flex flex-col min-h-screen bg-background-light dark:bg-background-dark text-[#181112] dark:text-white font-sans">
-        <CartProvider>
-          <SmoothScrolling />
-          <Navbar />
-          <main className="flex-grow">
-            {children}
-          </main>
-          <Footer />
-        </CartProvider>
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
+          <CartProvider>
+            <SmoothScrolling />
+            <Navbar />
+            <main className="flex-grow">
+              {children}
+            </main>
+            <Footer />
+          </CartProvider>
+        </GoogleOAuthProvider>
       </body>
     </html>
   );
