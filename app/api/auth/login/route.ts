@@ -1,31 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
-
-const usersFile = path.join(process.cwd(), 'data', 'users.json');
-
-// Ensure data directory exists
-function ensureDataDir() {
-  const dataDir = path.join(process.cwd(), 'data');
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-  }
-}
-
-// Get all users
-function getUsers(): Map<string, { email: string; password: string; name: string; phone: string }> {
-  ensureDataDir();
-  try {
-    if (fs.existsSync(usersFile)) {
-      const data = fs.readFileSync(usersFile, 'utf-8');
-      const users = JSON.parse(data);
-      return new Map(Object.entries(users));
-    }
-  } catch (error) {
-    console.error('Error reading users file:', error);
-  }
-  return new Map();
-}
+import { verifyUserCredentials } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
@@ -40,19 +14,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const users = getUsers();
-
-    // Check if user exists
-    const user = users.get(email);
+    // Verify user credentials using db
+    const user = await verifyUserCredentials(email, password);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Invalid email or password' },
-        { status: 401 }
-      );
-    }
-
-    // Check password (in production, use bcrypt or similar)
-    if (user.password !== password) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
         { status: 401 }
