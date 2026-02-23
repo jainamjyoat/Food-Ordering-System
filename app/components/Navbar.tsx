@@ -4,9 +4,91 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
 
+type UserProfile = {
+  name?: string;
+  email?: string;
+  phone?: string;
+  picture?: string;
+};
+
 export default function Navbar() {
   const pathname = usePathname();
   const { totalItems } = useCart();
+
+  // Client-side auth + user profile (based on local/session storage)
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+  const [user, setUser] = React.useState<UserProfile | null>(null);
+
+  const readAuthFromStorage = React.useCallback(() => {
+    try {
+      const flag = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
+      const userJson = localStorage.getItem("user") || sessionStorage.getItem("user");
+      if (userJson) {
+        try {
+          const parsed: UserProfile = JSON.parse(userJson);
+          setUser(parsed);
+        } catch {
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+      setIsAuthenticated(!!flag || !!userJson);
+    } catch {
+      setIsAuthenticated(false);
+      setUser(null);
+    }
+  }, []);
+
+  const fetchProfile = React.useCallback(async () => {
+    try {
+      const res = await fetch("/api/user/profile", { cache: "no-store" });
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.user) {
+          setUser(data.user);
+          setIsAuthenticated(true);
+          try {
+            localStorage.setItem("user", JSON.stringify({
+              name: data.user.name,
+              email: data.user.email,
+              phone: data.user.phone,
+              picture: data.user.picture,
+            }));
+            localStorage.setItem("authToken", "1");
+          } catch {}
+        }
+      } else if (res.status === 401) {
+        setIsAuthenticated(false);
+      }
+    } catch {
+      // ignore network errors for navbar refresh
+    }
+  }, []);
+
+  React.useEffect(() => {
+    readAuthFromStorage();
+    fetchProfile();
+    const onFocus = () => {
+      readAuthFromStorage();
+      fetchProfile();
+    };
+    const onStorage = () => {
+      readAuthFromStorage();
+    };
+    window.addEventListener("focus", onFocus);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, [readAuthFromStorage, fetchProfile]);
+
+  React.useEffect(() => {
+    // Re-evaluate auth whenever the route changes (e.g., after login redirect)
+    readAuthFromStorage();
+    fetchProfile();
+  }, [pathname, readAuthFromStorage, fetchProfile]);
 
   // Define Page States
   const isLoginPage = pathname === "/login"; // Check for login page
@@ -83,6 +165,10 @@ export default function Navbar() {
   }
 
   // --- MAIN NAVBAR ---
+  const nameForInitials = (user?.name || "").trim();
+  const parts = nameForInitials ? nameForInitials.split(/\s+/) : [];
+  const initials = ((parts[0]?.[0] || "") + (parts[1]?.[0] || "")).toUpperCase();
+
   return (
     <header className="sticky top-0 z-50 w-full bg-white/90 dark:bg-background-dark/90 backdrop-blur-md border-b border-neutral-light dark:border-neutral-dark">
       <div className="max-w-[1440px] mx-auto px-6 h-20 flex items-center justify-between">
@@ -111,12 +197,30 @@ export default function Navbar() {
              <CartButton isHomeTheme={!isMenuPage} />
           </div>
 
-          <Link href="/login">
-            <div 
-              className="size-9 rounded-full bg-cover bg-center border-2 border-white dark:border-neutral-dark shadow-sm cursor-pointer" 
-              style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuATvQn9vyCe_MOlfQ0RbZTXFrxt9StE6kDuGp9BpMUsyFQ_YmCDCEz-Gy5puDjfZIofW77RZNduz-vtX_HOsEkNRtDiw6tuG7vWURODfv_MoDW9WaP2T2VkmvvKu41MxUBMCSvPiP7VgPFYIDKeEEwwJB-y4WKAbEFHfhWM97XmiwEQYUN6URJTq0_WmE2GceN5auD8woB1MeMESyZ1xNLbdASxRzjY5DgUEoeTBMq6o7fNa9JInYAaf83Ah87gwrc7_be-QTqRIMYm')" }}
-            ></div>
-          </Link>
+          {isAuthenticated ? (
+            <Link href="/profile" aria-label="Open profile">
+              {user?.picture ? (
+                <div 
+                  className="size-9 rounded-full bg-cover bg-center border-2 border-white dark:border-neutral-dark shadow-sm cursor-pointer" 
+                  style={{ backgroundImage: `url('${user.picture}')` }}
+                  title={user?.name || user?.email || "Profile"}
+                ></div>
+              ) : (
+                <div
+                  className="size-9 rounded-full bg-primary/10 text-primary flex items-center justify-center border-2 border-white dark:border-neutral-dark shadow-sm cursor-pointer font-bold"
+                  title={user?.name || user?.email || "Profile"}
+                >
+                  <span className="text-xs">{initials || "U"}</span>
+                </div>
+              )}
+            </Link>
+          ) : (
+            <Link href="/login">
+              <button className="px-4 py-2 rounded-lg bg-primary text-white font-semibold shadow-lg hover:bg-primary-hover transition-colors">
+                Sign Up
+              </button>
+            </Link>
+          )}
         </div>
       </div>
     </header>
