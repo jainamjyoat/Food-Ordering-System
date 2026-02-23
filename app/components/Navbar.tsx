@@ -184,8 +184,8 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-8">
           <Link className={getLinkClass("/")} href="/">Home</Link>
           <Link className={getLinkClass("/menu")} href="/menu">Menu</Link>
-          <a className={getLinkClass("/offers")} href="/offer">Offers</a>
-          <a className={getLinkClass("/support")} href="/support">Support</a>
+          <Link className={getLinkClass("/offers")} href="/offer">Offers</Link>
+          <Link className={getLinkClass("/support")} href="/support">Support</Link>
         </nav>
 
         <div className="flex items-center gap-6">
