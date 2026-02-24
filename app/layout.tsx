@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
+import ConditionalNavbar from "./components/ConditionalNavbar";
+import ConditionalFooter from "./components/ConditionalFooter";
 import SmoothScrolling from "./components/SmoothScrolling";
 import { CartProvider } from "./context/CartContext";
 import { GoogleAuthProvider } from "./components/GoogleAuthProvider";
@@ -34,11 +34,11 @@ export default function RootLayout({
         <GoogleAuthProvider>
           <CartProvider>
             <SmoothScrolling />
-            <Navbar />
+            <ConditionalNavbar />
             <main className="flex-grow">
               {children}
             </main>
-            <Footer />
+            <ConditionalFooter />
           </CartProvider>
         </GoogleAuthProvider>
       </body>
