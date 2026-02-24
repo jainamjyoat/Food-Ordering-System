@@ -1,29 +1,105 @@
 "use client";
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function AdminDashboard() {
-  // --- Dummy Data ---
-  const stats = [
-    { title: "Total Revenue", value: "$24,500.00", trend: "12.5%", isUp: true, icon: "payments", progress: "w-3/4", color: "text-blue-500", bg: "bg-blue-500" },
-    { title: "Active Orders", value: "42", trend: "5.2%", isUp: true, icon: "local_mall", progress: "w-1/2", color: "text-emerald-500", bg: "bg-emerald-500" },
-    { title: "Total Users", value: "1,280", trend: "8.1%", isUp: true, icon: "group", progress: "w-2/3", color: "text-purple-500", bg: "bg-purple-500" },
-    { title: "New Signups", value: "15", trend: "2.4%", isUp: false, icon: "person_add", progress: "w-1/4", color: "text-amber-500", bg: "bg-amber-500" },
-  ];
+  const [stats, setStats] = useState<any[]>([]);
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const [inventory, setInventory] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [adminName, setAdminName] = useState('Admin');
+  const [adminEmail, setAdminEmail] = useState('');
 
-  const recentOrders = [
-    { id: "#ORD-7721", initials: "JD", name: "John Doe", items: "2x Burger, 1x Fries", total: "$32.50", status: "Preparing", statusClass: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400 border-amber-200 dark:border-amber-500/30" },
-    { id: "#ORD-7720", initials: "JS", name: "Jane Smith", items: "1x Pizza Margherita", total: "$18.00", status: "Pending", statusClass: "bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400 border-gray-200 dark:border-gray-500/30" },
-    { id: "#ORD-7719", initials: "RB", name: "Robert Brown", items: "3x Tacos, 1x Soda", total: "$22.00", status: "Out for Delivery", statusClass: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400 border-blue-200 dark:border-blue-500/30" },
-    { id: "#ORD-7718", initials: "ED", name: "Emily Davis", items: "1x Pasta Carbonara", total: "$15.50", status: "Preparing", statusClass: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400 border-amber-200 dark:border-amber-500/30" },
-    { id: "#ORD-7717", initials: "MW", name: "Michael Wilson", items: "2x Sushi Set", total: "$45.00", status: "Delivered", statusClass: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30" },
-  ];
+  useEffect(() => {
+    // Fetch logged-in admin info from localStorage
+    try {
+      const userJson = localStorage.getItem('user') || sessionStorage.getItem('user');
+      if (userJson) {
+        const user = JSON.parse(userJson);
+        setAdminName(user.name || 'Admin');
+        setAdminEmail(user.email || '');
+      }
+    } catch (e) {
+      console.error('Error reading admin info:', e);
+    }
+  }, []);
 
-  const inventory = [
-    { name: "Signature Cheese Burger", sold: "84 units today", price: "$12.99", stock: "In Stock", stockClass: "text-emerald-600 dark:text-emerald-400 bg-emerald-100/50 dark:bg-emerald-500/10", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCmqs_lz5w6HBcUMc0ruFuGdihEu5gACGGdu6Fk1rDNY2RQcQ5QDOTScEr_NJDsam95LQ0TMSFLpk-iyvNXRdLZhaNPi7i2q4KwRXk9f0r_h98IO557IbOVYNr_leeTkDRQiBgkA4QYFyVGWVWUzUHOKoGiyOnkylrZ3o9ZPxddilTktIP4aKN2F6miTMb2GPByAW_5N-mL5hVeAcPuqrvhF7CnJwt4MKWwJuGzsknsxIavBIf5b21QISmC3H4m-apGWIrDpX8RU4MP" },
-    { name: "Pepperoni Feast Pizza", sold: "62 units today", price: "$18.50", stock: "In Stock", stockClass: "text-emerald-600 dark:text-emerald-400 bg-emerald-100/50 dark:bg-emerald-500/10", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBTzejVoz4HaL2sBo2QtOWO3qqgj6XRgS4rDq3cqGEq6w5S8SwbuW0FPhcu9ZUjAh0NeajHIg9Vd4m9qY6KWyv4g1foTSs4KilYtHDLRbL6ov_4wd0mnnMBM4EutuGAryozApTTWJrkpZlL2KS9wa-vTJvsLq0pB0LH4ql9Jd5FU3mB_y5Ws2SEbMHo0hxiwTUm8QnSS2V2omZzaL0q-fs49sx_Bp3gxdHy68tsOH-lw_F3uB4tFy7_RZVw-HgW4iOarnkb066dDqeL" },
-    { name: "Garden Fresh Salad", sold: "45 units today", price: "$9.25", stock: "Low Stock (12)", stockClass: "text-amber-600 dark:text-amber-400 bg-amber-100/50 dark:bg-amber-500/10", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuBlRv4frFCPE9bG6yhWhfZ2pHMgQKSWhcUfD2DaiGmetSBT-geP1SwVZBDmaPD8ybpbx9vFH4AYpO1o7eRKUiX6Y3YfQFdU_MMF3hEOEcd7Ywu81Xxe3jmus3WplA1vMdQPiZD27YEMUAjbQpiPokYwpbeXqL4qeXDOYCQIr-qLj0HL5uiq5G2WdosIL9uZny5XN0WgortM5MOulLBB0gHnVQQZOJKPIsQRELb2oqKdRzyNmdkBoQmBN-B2nnbPPaxDvv3Sj7DDwe43" },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        // Fetch all orders
+        const ordersRes = await fetch('/api/orders/get', { cache: 'no-store' });
+        const ordersText = await ordersRes.text();
+        let ordersData: any = {};
+        try { ordersData = JSON.parse(ordersText); } catch (e) {
+          console.error('Non-JSON from /api/orders:', ordersText);
+        }
+        const allOrders = Array.isArray(ordersData?.orders) ? ordersData.orders : [];
+
+        // Fetch all food items
+        const itemsRes = await fetch('/api/food-items', { cache: 'no-store' });
+        const itemsText = await itemsRes.text();
+        let itemsData: any = {};
+        try { itemsData = JSON.parse(itemsText); } catch (e) {
+          console.error('Non-JSON from /api/food-items:', itemsText);
+        }
+        const allItems = Array.isArray(itemsData?.items) ? itemsData.items : [];
+
+        // Calculate stats
+        const totalRevenue = allOrders.reduce((sum: number, order: any) => sum + (Number(order.total) || 0), 0);
+        const activeOrders = allOrders.filter((o: any) => o.status === 'pending' || o.status === 'preparing').length;
+        const calculatedStats = [
+          { title: "Total Revenue", value: `${totalRevenue.toFixed(2)}`, trend: "12.5%", isUp: true, icon: "payments", progress: "w-3/4", color: "text-blue-500", bg: "bg-blue-500" },
+          { title: "Active Orders", value: String(activeOrders), trend: "5.2%", isUp: true, icon: "local_mall", progress: "w-1/2", color: "text-emerald-500", bg: "bg-emerald-500" },
+          { title: "Total Items", value: String(allItems.length), trend: "8.1%", isUp: true, icon: "inventory_2", progress: "w-2/3", color: "text-purple-500", bg: "bg-purple-500" },
+          { title: "Total Orders", value: String(allOrders.length), trend: "2.4%", isUp: true, icon: "shopping_bag", progress: "w-1/4", color: "text-amber-500", bg: "bg-amber-500" },
+        ];
+        setStats(calculatedStats);
+
+        // Format recent orders (last 5)
+        const formatted = allOrders.slice(-5).reverse().map((order: any) => {
+          const name = order.customerName || 'Unknown';
+          const initials = name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+          const itemsStr = order.items?.map((i: any) => `${i.quantity}x ${i.name}`).join(', ') || 'N/A';
+          const statusClass = order.status === 'pending' ? 'bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400 border-gray-200 dark:border-gray-500/30'
+            : order.status === 'preparing' ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400 border-amber-200 dark:border-amber-500/30'
+            : order.status === 'delivered' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30'
+            : 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400 border-blue-200 dark:border-blue-500/30';
+          return {
+            id: order.orderId || '#ORD-0000',
+            initials,
+            name,
+            items: itemsStr,
+            total: `${Number(order.total || 0).toFixed(2)}`,
+            status: order.status || 'pending',
+            statusClass,
+          };
+        });
+        setRecentOrders(formatted);
+
+        // Format inventory (top 3 items)
+        const topItems = allItems.slice(0, 3).map((item: any) => ({
+          name: item.name,
+          sold: "0 units today",
+          price: `${Number(item.price || 0).toFixed(2)}`,
+          stock: "In Stock",
+          stockClass: "text-emerald-600 dark:text-emerald-400 bg-emerald-100/50 dark:bg-emerald-500/10",
+          img: item.imageUrl || item.image || '/next.svg',
+        }));
+        setInventory(topItems);
+      } catch (e) {
+        console.error('Error fetching dashboard data:', e);
+        setError('Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     // Added w-full to the absolute root to force full width
@@ -74,8 +150,8 @@ export default function AdminDashboard() {
               style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBHFPt0gz9P0xGnuEJe8Y8admJEdO6aXkR8XzpE_KMtiRg9DV-6t3GEP_p63OlV3pXPkiqG60ObwObaHJ62IbGnW4sGS1jXeZ5ITVHyaYGqfi0IXFMaKEhMTrmv3iDrLOqnXqbg2niCeJCHkrQHYbgV6XHE5cEuFQo7msisYZZyt8pxFkqlFUDpQBC1r7Sq2Clao689-JGGwIVOXpoNtEnhoxv0FbbG4452hFGAevsdrmR1o7xVS_HjGwz7yBEFPH8B7BDw_Gkdddtp')" }}
             ></div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-gray-900 dark:text-white truncate">Alex Chen</p>
-              <p className="text-xs font-medium text-gray-500 truncate">Super Admin</p>
+              <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{adminName}</p>
+              <p className="text-xs font-medium text-gray-500 truncate">{adminEmail || 'Admin'}</p>
             </div>
             <Link href="/login" className="text-gray-400 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10">
               <span className="material-symbols-outlined text-xl">logout</span>
