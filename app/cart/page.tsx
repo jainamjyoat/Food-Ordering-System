@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useCart } from '../context/CartContext';
 import { useRouter } from 'next/navigation';
@@ -8,11 +8,66 @@ export default function CheckoutPage() {
   const { cart, updateQuantity, totalPrice, placeOrder } = useCart();
   const router = useRouter();
 
+  // Promo code state
+  const [promoInput, setPromoInput] = useState('');
+  const [applied, setApplied] = useState<{ code: string; discount: number; freeShipping: boolean; message: string } | null>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
+
+  const normalizeCode = (code: string) => code.trim().toUpperCase();
+
+  const evaluateCoupon = (code: string, subtotal: number, totalItems: number) => {
+    const c = normalizeCode(code);
+    if (!c) return { error: 'Enter a code' } as const;
+    switch (c) {
+      case 'FIRST50':
+        return { discount: subtotal * 0.5, freeShipping: false, message: '50% off applied' } as const;
+      case 'BOGO24':
+        if (totalItems < 2) return { error: 'BOGO requires at least 2 items in cart' } as const;
+        return { discount: subtotal * 0.5, freeShipping: false, message: 'BOGO applied (50% off)' } as const;
+      case 'FREESHIP':
+        return { discount: 0, freeShipping: true, message: 'Free shipping applied' } as const;
+      case 'SUSHI20':
+        return { discount: subtotal * 0.2, freeShipping: false, message: '20% off applied' } as const;
+      case 'NIGHTOWL':
+        return { discount: subtotal * 0.15, freeShipping: false, message: '15% off applied' } as const;
+      case 'GREEN10':
+        if (subtotal < 30) return { error: 'Requires $30+ subtotal' } as const;
+        return { discount: 10, freeShipping: false, message: '$10 off applied' } as const;
+      case 'SWEETX':
+        return { discount: 5, freeShipping: false, message: '$5 off applied' } as const;
+      default:
+        return { error: 'Invalid code' } as const;
+    }
+  };
+
+  const handleApplyPromo = () => {
+    if (applied) {
+      // Remove coupon
+      setApplied(null);
+      setPromoError(null);
+      return;
+    }
+    const res = evaluateCoupon(promoInput, totalPrice, cart.reduce((a, i) => a + i.quantity, 0));
+    if ('error' in res) {
+      setPromoError(res.error);
+      setApplied(null);
+    } else {
+      setApplied({ code: normalizeCode(promoInput), discount: res.discount, freeShipping: res.freeShipping, message: res.message });
+      setPromoError(null);
+    }
+  };
+
   // Calculations
   const DELIVERY_FEE = 4.99;
   const TAX_RATE = 0.08;
-  const taxes = totalPrice * TAX_RATE;
-  const finalTotal = totalPrice + taxes + (totalPrice > 0 ? DELIVERY_FEE : 0);
+
+  const discount = Math.min(totalPrice, applied?.discount ?? 0);
+  const freeShipping = applied?.freeShipping ?? false;
+  const discountedSubtotal = Math.max(0, totalPrice - discount);
+  const taxes = discountedSubtotal * TAX_RATE;
+  const deliveryFee = discountedSubtotal > 0 ? (freeShipping ? 0 : DELIVERY_FEE) : 0;
+  const finalTotal = discountedSubtotal + taxes + deliveryFee;
+
   const handlePlaceOrder = () => {
     placeOrder(); // Save to context and clear cart
     router.push('/order-tracking'); // Go to tracking
@@ -210,9 +265,15 @@ export default function CheckoutPage() {
                     <span>Subtotal</span>
                     <span className="font-semibold">${totalPrice.toFixed(2)}</span>
                   </div>
+                  {discount > 0 && (
+                    <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
+                      <span>Discount{applied ? ` (${applied.code})` : ''}</span>
+                      <span className="font-semibold text-green-600 dark:text-green-400">- ${discount.toFixed(2)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
-                    <span>Delivery Fee</span>
-                    <span className="font-semibold">${DELIVERY_FEE.toFixed(2)}</span>
+                    <span>Delivery Fee {freeShipping && <span className="ml-2 text-[10px] font-bold px-2 py-0.5 rounded bg-green-500/10 text-green-600 dark:text-green-400">Free</span>}</span>
+                    <span className="font-semibold">${deliveryFee.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
                     <span>Tax (8%)</span>
@@ -221,18 +282,38 @@ export default function CheckoutPage() {
                   
                   <div className="pt-2 pb-2">
                     <div className="flex gap-2">
-                      <input className="flex-1 px-3 py-2 text-sm rounded-lg bg-white dark:bg-[#221013] border-gray-200 dark:border-[#452026] focus:border-primary focus:ring-primary dark:text-white outline-none" placeholder="Promo code" type="text"/>
-                      <button className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white text-sm font-bold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Apply</button>
+                      <input 
+                        value={promoInput}
+                        onChange={(e) => setPromoInput(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleApplyPromo(); }}
+                        disabled={!!applied}
+                        className="flex-1 px-3 py-2 text-sm rounded-lg bg-white dark:bg-[#221013] border-gray-200 dark:border-[#452026] focus:border-primary focus:ring-primary dark:text-white outline-none disabled:opacity-60" 
+                        placeholder="Promo code" 
+                        type="text"
+                      />
+                      <button 
+                        onClick={handleApplyPromo}
+                        className={`px-4 py-2 text-sm font-bold rounded-lg transition-colors ${applied ? 'bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-white hover:bg-gray-400 dark:hover:bg-gray-500' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-600'}`}
+                      >
+                        {applied ? 'Remove' : 'Apply'}
+                      </button>
+                  
                     </div>
-                  </div>
-
-                  <div className="border-t border-gray-200 dark:border-gray-700 pt-3 flex justify-between items-center">
-                    <span className="text-base font-bold text-[#181112] dark:text-white">Total</span>
-                    <span className="text-2xl font-extrabold text-primary">${finalTotal.toFixed(2)}</span>
+                    <div className="mt-2 min-h-[20px]">
+                      {promoError && <p className="text-xs text-red-500 font-semibold">{promoError}</p>}
+                      {!promoError && applied && (
+                        <p className="text-xs text-green-600 dark:text-green-400 font-semibold">Coupon {applied.code} applied — {applied.message}</p>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                <div className="p-6 pt-0 bg-gray-50/50 dark:bg-[#2a1418]">
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-3 flex justify-between items-center">
+                  <span className="text-base font-bold text-[#181112] dark:text-white">Total</span>
+                  <span className="text-2xl font-extrabold text-primary">${finalTotal.toFixed(2)}</span>
+                </div>
+
+              <div className="p-6 pt-0 bg-gray-50/50 dark:bg-[#2a1418]">
                   <button 
                       onClick={handlePlaceOrder}
                       className="w-full bg-primary hover:bg-red-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/25 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2 group cursor-pointer"

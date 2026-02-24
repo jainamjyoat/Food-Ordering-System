@@ -1,11 +1,34 @@
 "use client";
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 
+type Offer = {
+  id: number;
+  title: string;
+  desc: string;
+  code: string;
+  badge: string;
+  badgeColor: string;
+  image: string;
+  tags: string[]; // for filtering categories
+};
+
+const FILTERS = [
+  { key: 'All', label: 'All Offers', icon: null },
+  { key: 'Trending', label: 'Trending', icon: 'local_fire_department' },
+  { key: 'Near You', label: 'Near You', icon: 'restaurant' },
+  { key: 'Pizza', label: 'Pizza', icon: 'local_pizza' },
+  { key: 'Sushi', label: 'Sushi', icon: 'set_meal' },
+] as const;
+
+type FilterKey = typeof FILTERS[number]['key'];
+
 export default function OffersPage() {
-  
+  const [activeFilter, setActiveFilter] = useState<FilterKey>('All');
+  const [copiedId, setCopiedId] = useState<number | null>(null);
+
   // Dummy data for the offers to make the code cleaner
-  const offers = [
+  const offers: Offer[] = [
     {
       id: 1,
       title: "Buy One Get One Free",
@@ -13,7 +36,8 @@ export default function OffersPage() {
       code: "BOGO24",
       badge: "Active Now",
       badgeColor: "bg-green-500/10 text-green-500",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBO7OROWXPumV-rSDDmOUf1grKkj0hFSDAPRIWp8iAQpWmCly9UOIlP5YzVwYrrOwenoMSJfF14CCOGeTdJcYIMKXOd-kkYrM79Q46gEpHA24_wMhy6KtOHIvNFu-X7KfKUn5QYGv8wnr-LRpYQ1LoAQS-SQmsd9wCPC6zzcIeqfMrflYVoayXSf9ZdLuyKT6mZhfT4-e3UaA4WU9LbFhB0GwZtoMhzHXkwMpPxmTWnnjVewn60NVoDUxYxg3pXsBDPqsKTtKc4dpJA"
+      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBO7OROWXPumV-rSDDmOUf1grKkj0hFSDAPRIWp8iAQpWmCly9UOIlP5YzVwYrrOwenoMSJfF14CCOGeTdJcYIMKXOd-kkYrM79Q46gEpHA24_wMhy6KtOHIvNFu-X7KfKUn5QYGv8wnr-LRpYQ1LoAQS-SQmsd9wCPC6zzcIeqfMrflYVoayXSf9ZdLuyKT6mZhfT4-e3UaA4WU9LbFhB0GwZtoMhzHXkwMpPxmTWnnjVewn60NVoDUxYxg3pXsBDPqsKTtKc4dpJA",
+      tags: ['Trending', 'Pizza']
     },
     {
       id: 2,
@@ -22,7 +46,8 @@ export default function OffersPage() {
       code: "FREESHIP",
       badge: "Popular",
       badgeColor: "bg-blue-500/10 text-blue-500",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBvJUSA1jpMHYjpwovNqm2pvn9uEq0gc8imTf4xuMI6CTb5FwapRY6bnB92Qsil5hxSa1cofALEQ7e4U481IRxc8eAD3S35cXxTU9sLFKqw5UTKW5J2EcVPWwghmiu_VGFPISLY97YzBYjRcZFF-5vOx3yBk9pSpOrX6aVCsCsXQylBzzhbD2kllmkUVZ2W0JaUxPAa5aTC21mN615ZCRcmtHvcj0SKET7HS9qE-ZeXwTfn1z761McOeGqTF6d_GKT4HDRg_EgWEap1"
+      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBvJUSA1jpMHYjpwovNqm2pvn9uEq0gc8imTf4xuMI6CTb5FwapRY6bnB92Qsil5hxSa1cofALEQ7e4U481IRxc8eAD3S35cXxTU9sLFKqw5UTKW5J2EcVPWwghmiu_VGFPISLY97YzBYjRcZFF-5vOx3yBk9pSpOrX6aVCsCsXQylBzzhbD2kllmkUVZ2W0JaUxPAa5aTC21mN615ZCRcmtHvcj0SKET7HS9qE-ZeXwTfn1z761McOeGqTF6d_GKT4HDRg_EgWEap1",
+      tags: ['Trending', 'Near You']
     },
     {
       id: 3,
@@ -31,7 +56,8 @@ export default function OffersPage() {
       code: "SUSHI20",
       badge: "Exclusive",
       badgeColor: "bg-primary/10 text-primary",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDwnXTpjsc2NApIatT-iu93nwqfcLZqV_W85tLfJK4rom0unttr_c0jNaqSfOOSg6eiCsdSCJ8neF2YFt1KbENawVdEYRIfwSzJhjFjWdD0GJeQsSZxnu7mdJndQeeVFvdTI0SoeqzA6b1awlPaOb84SvWO9CDsB2E6u6SeyuT1Uk-LsFgcGqLUIbasuwSdZGyNsVKAGzeomJBKgj44IU12XiwaVdbYKTcveMs0h0fTwfRZoxwBi8TrvKaJ5ZsLoWAFy3Ba5Tp68iSB"
+      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDwnXTpjsc2NApIatT-iu93nwqfcLZqV_W85tLfJK4rom0unttr_c0jNaqSfOOSg6eiCsdSCJ8neF2YFt1KbENawVdEYRIfwSzJhjFjWdD0GJeQsSZxnu7mdJndQeeVFvdTI0SoeqzA6b1awlPaOb84SvWO9CDsB2E6u6SeyuT1Uk-LsFgcGqLUIbasuwSdZGyNsVKAGzeomJBKgj44IU12XiwaVdbYKTcveMs0h0fTwfRZoxwBi8TrvKaJ5ZsLoWAFy3Ba5Tp68iSB",
+      tags: ['Sushi', 'Near You']
     },
     {
       id: 4,
@@ -40,7 +66,8 @@ export default function OffersPage() {
       code: "NIGHTOWL",
       badge: "Night Owl",
       badgeColor: "bg-gray-500/10 text-gray-500", // Adjusted for better visibility in dark mode
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuA_4tdUc1NkIsMjWNPbqqU88vUm5_JbHCclvxFJ6x9zfhdgx-Y3CYXCnzlNl-_yNmV9ymmGyNcliOIa3fvKb9WXtz59OV7UODqHvVDZwS4kqP49nt3BmUEZ3gtBf_5oTpLptbMACfT5-Wrqg3KG5BAAC1RCZg6IqZgFVKyFtwxKX7mrtRNHvJFLMw5zwCD3NbSPB3G8IPL7Myf_iJ6OomVJRmGzYYD3fVqAo5FBoS4mvVOY3HPp6SKNkDFR0QVxgP8IMKnkx5uGoN2p"
+      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuA_4tdUc1NkIsMjWNPbqqU88vUm5_JbHCclvxFJ6x9zfhdgx-Y3CYXCnzlNl-_yNmV9ymmGyNcliOIa3fvKb9WXtz59OV7UODqHvVDZwS4kqP49nt3BmUEZ3gtBf_5oTpLptbMACfT5-Wrqg3KG5BAAC1RCZg6IqZgFVKyFtwxKX7mrtRNHvJFLMw5zwCD3NbSPB3G8IPL7Myf_iJ6OomVJRmGzYYD3fVqAo5FBoS4mvVOY3HPp6SKNkDFR0QVxgP8IMKnkx5uGoN2p",
+      tags: ['Trending']
     },
     {
       id: 5,
@@ -49,7 +76,8 @@ export default function OffersPage() {
       code: "GREEN10",
       badge: "Flash Sale",
       badgeColor: "bg-primary/10 text-primary",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCfwLUDqxyJ1HvW4L0ypncx6Q6zLIwbPakrQA5DvtMRCenu6QqmBd4vkUGi9Qjx4ttt4UXm0N-c-IlCoACQ2IMPc_WKmLl19ato_tWM3__HWYamxxrFt_O8uWH_aX7NVz_jPvCCMpIhg8tCRL4bEbLSsRbe6el4rfVCUF-0cNdYElyoHL3N40tw24UiH6kqtBLO5BLMNxlATZGA7gPcsd-vhzTXkNSpICNp-hCHQ_3Gvqr_sM99le_RNqeRV7QiWCDKk6QRJG1VefLK"
+      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCfwLUDqxyJ1HvW4L0ypncx6Q6zLIwbPakrQA5DvtMRCenu6QqmBd4vkUGi9Qjx4ttt4UXm0N-c-IlCoACQ2IMPc_WKmLl19ato_tWM3__HWYamxxrFt_O8uWH_aX7NVz_jPvCCMpIhg8tCRL4bEbLSsRbe6el4rfVCUF-0cNdYElyoHL3N40tw24UiH6kqtBLO5BLMNxlATZGA7gPcsd-vhzTXkNSpICNp-hCHQ_3Gvqr_sM99le_RNqeRV7QiWCDKk6QRJG1VefLK",
+      tags: ['Near You']
     },
     {
       id: 6,
@@ -58,9 +86,37 @@ export default function OffersPage() {
       code: "SWEETX",
       badge: "Sweet Deal",
       badgeColor: "bg-pink-500/10 text-pink-500",
-      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBP7s2Kq3g6yNVtvAg6wQL8gn4va5OgHi9tTs_x1Fa79C_029XkEFrFkdsVoevT64NSSS4W4SbtPStnse8eR6IxdjjUkfWhiabnfb2aw0xPc6YncQZ2lrEcYJG63XFKG_0MFNgPHCzKIviNk_UjYkD4K4VEBOyIcigK_FilMky8fGJdedTlr1i3cAdk_FABKVJQOCQukCC36gDItu6NPh9RcWZmyn3R5wk9lC7s41TRZHBrxbpCHTbbqV165ZQHRVemdEeWkaDseUl7"
+      image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBP7s2Kq3g6yNVtvAg6wQL8gn4va5OgHi9tTs_x1Fa79C_029XkEFrFkdsVoevT64NSSS4W4SbtPStnse8eR6IxdjjUkfWhiabnfb2aw0xPc6YncQZ2lrEcYJG63XFKG_0MFNgPHCzKIviNk_UjYkD4K4VEBOyIcigK_FilMky8fGJdedTlr1i3cAdk_FABKVJQOCQukCC36gDItu6NPh9RcWZmyn3R5wk9lC7s41TRZHBrxbpCHTbbqV165ZQHRVemdEeWkaDseUl7",
+      tags: []
     }
   ];
+
+  const filteredOffers = useMemo(() => {
+    if (activeFilter === 'All') return offers;
+    return offers.filter((o) => o.tags.includes(activeFilter));
+  }, [activeFilter, offers]);
+
+  const handleCopy = async (id: number, text: string) => {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        const el = document.createElement('textarea');
+        el.value = text;
+        el.setAttribute('readonly', '');
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+      }
+      setCopiedId(id);
+      window.setTimeout(() => setCopiedId(null), 1500);
+    } catch (_) {
+      // Silent fail; could add toast later
+    }
+  };
 
   return (
     <div className="flex-1 w-full bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100 font-sans">
@@ -104,27 +160,28 @@ export default function OffersPage() {
             <h3 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Featured Offers</h3>
             
             <div className="flex gap-2 overflow-x-auto pb-2 hide-scrollbar">
-              <button className="flex shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-5 py-2 text-white text-sm font-bold shadow-md shadow-primary/20 cursor-pointer">
-                All Offers
-              </button>
-              <button className="flex shrink-0 items-center justify-center gap-2 rounded-full bg-white dark:bg-surface-dark border border-neutral-light dark:border-neutral-dark px-5 py-2 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-dark transition-colors cursor-pointer">
-                <span className="material-symbols-outlined text-[18px]">local_fire_department</span> Trending
-              </button>
-              <button className="flex shrink-0 items-center justify-center gap-2 rounded-full bg-white dark:bg-surface-dark border border-neutral-light dark:border-neutral-dark px-5 py-2 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-dark transition-colors cursor-pointer">
-                <span className="material-symbols-outlined text-[18px]">restaurant</span> Near You
-              </button>
-              <button className="flex shrink-0 items-center justify-center gap-2 rounded-full bg-white dark:bg-surface-dark border border-neutral-light dark:border-neutral-dark px-5 py-2 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-dark transition-colors cursor-pointer">
-                <span className="material-symbols-outlined text-[18px]">local_pizza</span> Pizza
-              </button>
-              <button className="flex shrink-0 items-center justify-center gap-2 rounded-full bg-white dark:bg-surface-dark border border-neutral-light dark:border-neutral-dark px-5 py-2 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-neutral-dark transition-colors cursor-pointer">
-                <span className="material-symbols-outlined text-[18px]">set_meal</span> Sushi
-              </button>
+              {FILTERS.map(({ key, label, icon }) => {
+                const isActive = activeFilter === key;
+                const base = 'flex shrink-0 items-center justify-center gap-2 rounded-full px-5 py-2 text-sm transition-colors cursor-pointer';
+                const active = 'bg-primary text-white font-bold shadow-md shadow-primary/20';
+                const inactive = 'bg-white dark:bg-surface-dark border border-neutral-light dark:border-neutral-dark text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-neutral-dark';
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setActiveFilter(key)}
+                    aria-pressed={isActive}
+                    className={`${base} ${isActive ? active : inactive}`}
+                  >
+                    {icon && <span className="material-symbols-outlined text-[18px]">{icon}</span>} {label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {/* Offers Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {offers.map((offer) => (
+            {filteredOffers.map((offer) => (
               <div key={offer.id} className="group bg-white dark:bg-surface-dark border border-neutral-light dark:border-neutral-dark rounded-2xl p-6 hover:border-primary/50 transition-all shadow-sm hover:shadow-xl hover:-translate-y-1 duration-300">
                 
                 <div className="flex items-start justify-between mb-5">
@@ -150,13 +207,12 @@ export default function OffersPage() {
                   <button 
                     onClick={(e) => {
                       e.preventDefault();
-                      navigator.clipboard.writeText(offer.code);
-                      // You could add a toast notification here later
-                      alert(`Copied: ${offer.code}`); 
+                      handleCopy(offer.id, offer.code);
                     }}
-                    className="flex items-center gap-2 bg-primary/10 hover:bg-primary text-primary hover:text-white px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer"
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${copiedId === offer.id ? 'bg-primary text-white' : 'bg-primary/10 hover:bg-primary text-primary hover:text-white'}`}
+                    aria-live="polite"
                   >
-                    <span className="material-symbols-outlined text-[18px]">content_copy</span> Copy
+                    <span className="material-symbols-outlined text-[18px]">{copiedId === offer.id ? 'check' : 'content_copy'}</span> {copiedId === offer.id ? 'Copied' : 'Copy'}
                   </button>
                 </div>
 
