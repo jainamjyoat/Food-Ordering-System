@@ -10,6 +10,10 @@ export default function AuthPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const router = useRouter();
+  const [roleChoiceVisible, setRoleChoiceVisible] = useState(false);
+  const [googleCredential, setGoogleCredential] = useState<string | null>(null);
+  const [googlePending, setGooglePending] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<'admin' | 'customer' | null>(null);
 
   // Login form state
   const [loginData, setLoginData] = useState({
@@ -66,9 +70,19 @@ export default function AuthPage() {
       }
 
       setSuccess('Login successful! Redirecting...');
-      setTimeout(() => {
-        router.push('/');
-      }, 1500);
+      try {
+        const profResp = await fetch('/api/user/profile', { method: 'GET' });
+        const profData = await profResp.json();
+        const role = profData?.user?.role;
+        const dest = role === 'admin' ? '/admin' : '/';
+        setTimeout(() => {
+          router.push(dest);
+        }, 800);
+      } catch (_) {
+        setTimeout(() => {
+          router.push('/');
+        }, 800);
+      }
     } catch (err) {
       setError('An error occurred. Please try again.');
     } finally {
@@ -116,6 +130,36 @@ export default function AuthPage() {
       handleLoginSubmit(e);
     } else {
       handleSignupSubmit(e);
+    }
+  };
+
+  const completeGoogleLogin = async (role: 'admin' | 'customer') => {
+    if (!googleCredential) return;
+    setGooglePending(true);
+    setError('');
+    setSuccess('');
+    try {
+      const resp = await fetch('/api/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential: googleCredential, role }),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        setError(data.error || 'Google login failed');
+        setGooglePending(false);
+        return;
+      }
+      setSuccess('Google login successful! Redirecting...');
+      setRoleChoiceVisible(false);
+      setGoogleCredential(null);
+      setSelectedRole(role);
+      setTimeout(() => {
+        router.push(role === 'admin' ? '/admin' : '/');
+      }, 800);
+    } catch (e) {
+      setError('An error occurred. Please try again.');
+      setGooglePending(false);
     }
   };
 
@@ -399,34 +443,10 @@ export default function AuthPage() {
                   onSuccess={async (credentialResponse) => {
                     setError('');
                     setSuccess('');
-                    setLoading(true);
-                    try {
-                      const response = await fetch('/api/auth/google', {
-                        method: 'POST',
-                        headers: {
-                          'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                          credential: credentialResponse.credential
-                        }),
-                      });
-
-                      const data = await response.json();
-
-                      if (!response.ok) {
-                        setError(data.error || 'Google login failed');
-                        setLoading(false);
-                        return;
-                      }
-
-                      setSuccess('Google login successful! Redirecting...');
-                      setTimeout(() => {
-                        router.push('/');
-                      }, 1500);
-                    } catch (err) {
-                      setError('An error occurred. Please try again.');
-                      setLoading(false);
-                    }
+                    // Do not auto-complete; show role chooser
+                    setLoading(false);
+                    setGoogleCredential(credentialResponse.credential ?? null);
+                    setRoleChoiceVisible(true);
                   }}
                   onError={() => {
                     setError('Google login failed. Please try again.');
@@ -441,6 +461,39 @@ export default function AuthPage() {
               <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">Apple</span>
             </button>
           </div>
+
+          {/* Role choice overlay for Google auth */}
+          {roleChoiceVisible && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className="bg-white dark:bg-[#1E1E1E] border border-neutral-light dark:border-neutral-dark rounded-2xl p-6 w-[90%] max-w-md shadow-xl">
+                <h3 className="text-lg font-bold mb-2 text-gray-900 dark:text-white">Choose your role</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Continue as an administrator or a customer?</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    disabled={googlePending}
+                    onClick={() => { setSelectedRole('customer'); completeGoogleLogin('customer'); }}
+                    className="px-4 py-3 rounded-xl bg-gray-100 dark:bg-neutral-dark hover:bg-gray-200 dark:hover:bg-[#2a2a2a] text-gray-900 dark:text-gray-100 font-bold transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    Customer
+                  </button>
+                  <button
+                    disabled={googlePending}
+                    onClick={() => { setSelectedRole('admin'); completeGoogleLogin('admin'); }}
+                    className="px-4 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold shadow-md transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    Admin
+                  </button>
+                </div>
+                <button
+                  disabled={googlePending}
+                  onClick={() => { setRoleChoiceVisible(false); setGoogleCredential(null); }}
+                  className="mt-4 w-full px-4 py-2 rounded-xl border border-neutral-light dark:border-neutral-dark text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-neutral-dark transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Toggle Button */}
           <div className="mt-8 text-center text-gray-500 dark:text-gray-400 text-sm">

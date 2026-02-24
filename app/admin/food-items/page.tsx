@@ -12,135 +12,153 @@ export default function AddMenuItemPage() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100 font-sans">
+    // Changed to min-h-screen and w-full for native scrolling and full width
+    <div className="flex min-h-screen w-full bg-[#F8FAFC] dark:bg-background-dark text-gray-900 dark:text-gray-100 font-sans">
       
-      {/* SideNavBar (Same as Admin Dashboard) */}
-      <aside className="w-64 flex-shrink-0 bg-white dark:bg-surface-dark border-r border-neutral-light dark:border-neutral-dark hidden md:flex flex-col z-20">
+      {/* Sidebar (Synced with Admin Dashboard) */}
+      <aside className="w-64 flex-shrink-0 bg-white dark:bg-[#1E1E1E] border-r border-gray-200 dark:border-gray-800 hidden md:flex flex-col z-20 shadow-sm sticky top-0 h-screen">
         <div className="p-6">
           <div className="flex items-center gap-3">
-            <div className="bg-primary size-10 rounded-lg flex items-center justify-center text-white shadow-lg shadow-primary/20">
+            <div className="bg-primary size-10 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
               <span className="material-symbols-outlined">restaurant</span>
             </div>
             <div className="flex flex-col">
-              <h1 className="text-gray-900 dark:text-gray-100 text-lg font-bold leading-none tracking-tight">FoodAdmin</h1>
-              <p className="text-gray-500 dark:text-gray-400 text-xs mt-1">Management Portal</p>
+              <h1 className="text-gray-900 dark:text-white text-xl font-black leading-none tracking-tight">FoodAdmin</h1>
+              <p className="text-gray-500 dark:text-gray-400 text-[11px] font-medium uppercase tracking-wider mt-1">Management</p>
             </div>
           </div>
         </div>
         
-        <nav className="flex-1 px-4 space-y-1">
-          <Link href="/admin" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-background-dark hover:text-primary dark:hover:text-gray-100 transition-colors">
+        <nav className="flex-1 px-4 space-y-1.5 mt-2">
+          <Link href="/admin" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
             <span className="material-symbols-outlined">dashboard</span>
-            <span className="font-medium text-sm">Dashboard</span>
+            <span className="text-sm">Dashboard</span>
           </Link>
-          <Link href="/admin/add-item" className="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary border border-primary/20 font-semibold transition-all">
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>restaurant_menu</span>
-            <span className="text-sm font-semibold">Menu Management</span>
-          </Link>
-          <Link href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-background-dark hover:text-primary dark:hover:text-gray-100 transition-colors">
+          <Link href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
             <span className="material-symbols-outlined">shopping_bag</span>
-            <span className="font-medium text-sm">Orders</span>
+            <span className="text-sm">Orders</span>
           </Link>
-          <Link href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-background-dark hover:text-primary dark:hover:text-gray-100 transition-colors">
+          {/* Active State for Menu Management */}
+          <Link href="/admin/add-item" className="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary font-bold transition-all relative overflow-hidden group">
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-md"></div>
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>restaurant_menu</span>
+            <span className="text-sm">Menu</span>
+          </Link>
+          <Link href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
             <span className="material-symbols-outlined">group</span>
-            <span className="font-medium text-sm">Customers</span>
+            <span className="text-sm">Users</span>
           </Link>
-          <Link href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-background-dark hover:text-primary dark:hover:text-gray-100 transition-colors">
+          <Link href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
             <span className="material-symbols-outlined">settings</span>
-            <span className="font-medium text-sm">Settings</span>
+            <span className="text-sm">Settings</span>
           </Link>
         </nav>
         
-        <div className="p-4 mt-auto border-t border-neutral-light dark:border-neutral-dark">
-          <div className="bg-gray-50 dark:bg-background-dark rounded-xl p-4 flex items-center gap-3 border border-transparent dark:border-neutral-dark">
+        <div className="p-4 mt-auto border-t border-gray-200 dark:border-gray-800">
+          <div className="bg-gray-50 hover:bg-gray-100 dark:bg-[#252525] dark:hover:bg-[#2A2A2A] rounded-xl p-3 flex items-center gap-3 transition-colors cursor-pointer border border-transparent dark:border-gray-800">
             <div 
-              className="size-10 rounded-full bg-cover bg-center border border-neutral-light dark:border-neutral-dark" 
+              className="size-9 rounded-full bg-cover bg-center ring-2 ring-white dark:ring-gray-800 shadow-sm" 
               style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBHFPt0gz9P0xGnuEJe8Y8admJEdO6aXkR8XzpE_KMtiRg9DV-6t3GEP_p63OlV3pXPkiqG60ObwObaHJ62IbGnW4sGS1jXeZ5ITVHyaYGqfi0IXFMaKEhMTrmv3iDrLOqnXqbg2niCeJCHkrQHYbgV6XHE5cEuFQo7msisYZZyt8pxFkqlFUDpQBC1r7Sq2Clao689-JGGwIVOXpoNtEnhoxv0FbbG4452hFGAevsdrmR1o7xVS_HjGwz7yBEFPH8B7BDw_Gkdddtp')" }}
             ></div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">Alex Chen</p>
-              <p className="text-xs text-gray-500 truncate">Super Admin</p>
+              <p className="text-sm font-bold text-gray-900 dark:text-white truncate">Alex Chen</p>
+              <p className="text-xs font-medium text-gray-500 truncate">Super Admin</p>
             </div>
-            <Link href="/login" className="text-gray-400 hover:text-primary transition-colors cursor-pointer">
-              <span className="material-symbols-outlined text-[20px]">logout</span>
+            <Link href="/login" className="text-gray-400 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10">
+              <span className="material-symbols-outlined text-xl">logout</span>
             </Link>
           </div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-y-auto hide-scrollbar relative">
+      <main className="flex-1 flex flex-col min-w-0 w-full">
         
-        {/* Mobile Header */}
-        <header className="h-16 flex items-center px-6 md:hidden bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-neutral-light dark:border-neutral-dark sticky top-0 z-10">
-          <button className="text-gray-500">
-              <span className="material-symbols-outlined">menu</span>
-          </button>
+        {/* Top Header (Synced with Admin Dashboard) */}
+        <header className="h-20 w-full flex items-center justify-between px-6 md:px-8 bg-[#F8FAFC]/80 dark:bg-background-dark/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800 sticky top-0 z-30">
+          <div className="flex items-center gap-4">
+            <button className="md:hidden text-gray-500 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-[#1E1E1E]">
+                <span className="material-symbols-outlined">menu</span>
+            </button>
+            {/* Breadcrumb style title */}
+            <div className="hidden sm:flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400">
+              <Link href="/admin" className="hover:text-primary transition-colors">Menu</Link>
+              <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+              <span className="text-gray-900 dark:text-white font-bold">Add Item</span>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <button className="p-2.5 text-gray-500 hover:text-primary bg-white dark:bg-[#1E1E1E] hover:bg-primary/5 border border-gray-200 dark:border-gray-800 rounded-xl relative transition-all cursor-pointer shadow-sm">
+              <span className="material-symbols-outlined text-[20px]">notifications</span>
+            </button>
+          </div>
         </header>
 
-        <div className="p-6 md:p-8 lg:p-12 max-w-4xl mx-auto w-full">
+        {/* Content Container - Constrained width for forms so they don't look awkwardly stretched on ultrawide */}
+        <div className="p-6 md:p-8 lg:p-10 max-w-5xl mx-auto w-full flex-1">
           
           {/* Header */}
-          <div className="mb-10">
+          <div className="mb-8">
             <div className="flex items-center gap-2 text-primary text-sm font-bold mb-3 uppercase tracking-wider">
               <span className="material-symbols-outlined text-xs">arrow_back</span>
-              <Link href="/admin" className="hover:underline">Back to Dashboard</Link>
+              <Link href="/admin" className="hover:underline">Back to Menu</Link>
             </div>
-            <h1 className="text-gray-900 dark:text-white text-3xl md:text-4xl font-extrabold tracking-tight">Add New Menu Item</h1>
+            <h1 className="text-gray-900 dark:text-white text-3xl md:text-4xl font-black tracking-tight">Add New Menu Item</h1>
             <p className="text-gray-500 dark:text-gray-400 mt-2 text-lg">Create a new culinary masterpiece for your digital storefront.</p>
           </div>
 
           {/* Form Content */}
-          <form className="space-y-10" onSubmit={handleSubmit}>
+          <form className="space-y-8" onSubmit={handleSubmit}>
             
             {/* General Information Section */}
             <section>
-              <div className="flex items-center gap-2 mb-6">
+              <div className="flex items-center gap-2 mb-4">
                 <span className="material-symbols-outlined text-primary">info</span>
                 <h2 className="text-gray-900 dark:text-white text-xl font-bold tracking-tight">General Information</h2>
               </div>
-              <div className="grid grid-cols-1 gap-6 bg-white dark:bg-surface-dark p-6 md:p-8 rounded-2xl border border-neutral-light dark:border-neutral-dark shadow-sm">
+              <div className="grid grid-cols-1 gap-6 bg-white dark:bg-[#1E1E1E] p-6 md:p-8 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
                 <div className="flex flex-col gap-2">
-                  <label className="text-gray-700 dark:text-gray-300 text-sm font-semibold">Item Name</label>
-                  <input className="bg-gray-50 dark:bg-background-dark border border-transparent dark:border-neutral-dark rounded-xl px-4 py-3.5 text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all" placeholder="e.g. Signature Truffle Burger" type="text" required />
+                  <label className="text-gray-700 dark:text-gray-300 text-sm font-bold">Item Name</label>
+                  <input className="w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-sm placeholder-gray-400" placeholder="e.g. Signature Truffle Burger" type="text" required />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-gray-700 dark:text-gray-300 text-sm font-semibold">Description</label>
-                  <textarea className="bg-gray-50 dark:bg-background-dark border border-transparent dark:border-neutral-dark rounded-xl px-4 py-3.5 text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all resize-none" placeholder="What makes this dish special? Mention key ingredients and flavor profiles..." rows={4} required></textarea>
+                  <label className="text-gray-700 dark:text-gray-300 text-sm font-bold">Description</label>
+                  <textarea className="w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-sm resize-none placeholder-gray-400" placeholder="What makes this dish special? Mention key ingredients and flavor profiles..." rows={4} required></textarea>
                 </div>
               </div>
             </section>
 
             {/* Pricing & Availability Section */}
             <section>
-              <div className="flex items-center gap-2 mb-6">
+              <div className="flex items-center gap-2 mb-4">
                 <span className="material-symbols-outlined text-primary">payments</span>
                 <h2 className="text-gray-900 dark:text-white text-xl font-bold tracking-tight">Pricing & Availability</h2>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white dark:bg-surface-dark p-6 md:p-8 rounded-2xl border border-neutral-light dark:border-neutral-dark shadow-sm">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white dark:bg-[#1E1E1E] p-6 md:p-8 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
                 <div className="flex flex-col gap-2">
-                  <label className="text-gray-700 dark:text-gray-300 text-sm font-semibold">Base Price ($)</label>
+                  <label className="text-gray-700 dark:text-gray-300 text-sm font-bold">Base Price ($)</label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">$</span>
-                    <input className="w-full bg-gray-50 dark:bg-background-dark border border-transparent dark:border-neutral-dark rounded-xl pl-8 pr-4 py-3.5 text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all" placeholder="0.00" step="0.01" type="number" required />
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
+                    <input className="w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-700 rounded-xl pl-8 pr-4 py-3 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-sm placeholder-gray-400" placeholder="0.00" step="0.01" type="number" required />
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-gray-700 dark:text-gray-300 text-sm font-semibold">Discount (%)</label>
+                  <label className="text-gray-700 dark:text-gray-300 text-sm font-bold">Discount (%)</label>
                   <div className="relative">
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">%</span>
-                    <input className="w-full bg-gray-50 dark:bg-background-dark border border-transparent dark:border-neutral-dark rounded-xl px-4 py-3.5 text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all" placeholder="0" type="number" min="0" max="100" />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">%</span>
+                    <input className="w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-sm placeholder-gray-400" placeholder="0" type="number" min="0" max="100" />
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-gray-700 dark:text-gray-300 text-sm font-semibold">Stock Status</label>
+                  <label className="text-gray-700 dark:text-gray-300 text-sm font-bold">Stock Status</label>
                   <div className="relative">
-                    <select className="w-full bg-gray-50 dark:bg-background-dark border border-transparent dark:border-neutral-dark rounded-xl px-4 py-3.5 text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all appearance-none cursor-pointer">
+                    <select className="w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-sm appearance-none cursor-pointer">
                         <option>In Stock</option>
                         <option>Limited Availability</option>
                         <option>Out of Stock</option>
                     </select>
-                    <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">expand_more</span>
+                    <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">expand_more</span>
                   </div>
                 </div>
               </div>
@@ -148,65 +166,70 @@ export default function AddMenuItemPage() {
 
             {/* Categorization Section */}
             <section>
-              <div className="flex items-center gap-2 mb-6">
+              <div className="flex items-center gap-2 mb-4">
                 <span className="material-symbols-outlined text-primary">category</span>
                 <h2 className="text-gray-900 dark:text-white text-xl font-bold tracking-tight">Categorization</h2>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white dark:bg-surface-dark p-6 md:p-8 rounded-2xl border border-neutral-light dark:border-neutral-dark shadow-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white dark:bg-[#1E1E1E] p-6 md:p-8 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
                 <div className="flex flex-col gap-2">
-                  <label className="text-gray-700 dark:text-gray-300 text-sm font-semibold">Primary Category</label>
+                  <label className="text-gray-700 dark:text-gray-300 text-sm font-bold">Primary Category</label>
                   <div className="relative">
-                    <select className="w-full bg-gray-50 dark:bg-background-dark border border-transparent dark:border-neutral-dark rounded-xl px-4 py-3.5 text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all appearance-none cursor-pointer">
+                    <select className="w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-sm appearance-none cursor-pointer">
                         <option>Main Course</option>
                         <option>Appetizers</option>
                         <option>Desserts</option>
                         <option>Beverages</option>
                         <option>Specials</option>
                     </select>
-                    <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">expand_more</span>
+                    <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">expand_more</span>
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-gray-700 dark:text-gray-300 text-sm font-semibold">Tags</label>
-                  <input className="bg-gray-50 dark:bg-background-dark border border-transparent dark:border-neutral-dark rounded-xl px-4 py-3.5 text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/50 outline-none transition-all" placeholder="Spicy, Vegan, Gluten-free (comma separated)" type="text" />
+                  <label className="text-gray-700 dark:text-gray-300 text-sm font-bold">Tags</label>
+                  <input className="w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-sm placeholder-gray-400" placeholder="Spicy, Vegan, Gluten-free (comma separated)" type="text" />
                 </div>
               </div>
             </section>
 
             {/* Image Upload Section */}
             <section>
-              <div className="flex items-center gap-2 mb-6">
+              <div className="flex items-center gap-2 mb-4">
                 <span className="material-symbols-outlined text-primary">image</span>
                 <h2 className="text-gray-900 dark:text-white text-xl font-bold tracking-tight">Image Upload</h2>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white dark:bg-surface-dark p-6 md:p-8 rounded-2xl border border-neutral-light dark:border-neutral-dark shadow-sm">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 bg-white dark:bg-[#1E1E1E] p-6 md:p-8 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
                 
                 {/* Upload Target */}
-                <label className="flex flex-col justify-center items-center border-2 border-dashed border-gray-300 dark:border-neutral-dark rounded-xl p-8 hover:border-primary dark:hover:border-primary transition-colors cursor-pointer group h-full min-h-[200px]">
-                  <span className="material-symbols-outlined text-4xl text-gray-400 dark:text-gray-500 group-hover:text-primary mb-4 transition-colors">cloud_upload</span>
-                  <p className="text-gray-700 dark:text-gray-300 font-semibold">Click to upload image</p>
-                  <p className="text-gray-500 text-xs mt-2 text-center">PNG, JPG or JPEG (Max 5MB)</p>
-                  <input className="hidden" type="file" accept="image/*" />
-                </label>
+                <div className="flex flex-col">
+                  <label className="text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Upload Photo</label>
+                  <label className="flex-1 flex flex-col justify-center items-center border-2 border-dashed border-gray-300 dark:border-gray-700 bg-gray-50/50 dark:bg-[#1A1A1A] rounded-xl p-8 hover:bg-gray-50 dark:hover:bg-[#252525] hover:border-primary dark:hover:border-primary transition-all cursor-pointer group min-h-[220px]">
+                    <span className="material-symbols-outlined text-4xl text-gray-400 group-hover:text-primary mb-3 transition-colors">cloud_upload</span>
+                    <p className="text-gray-700 dark:text-gray-300 font-bold">Click to browse or drag & drop</p>
+                    <p className="text-gray-500 font-medium text-xs mt-2 text-center">PNG, JPG or JPEG (Max 5MB)</p>
+                    <input className="hidden" type="file" accept="image/*" />
+                  </label>
+                </div>
                 
                 {/* Image Preview */}
                 <div className="flex flex-col">
-                  <label className="text-gray-700 dark:text-gray-300 text-sm font-semibold mb-3">Preview</label>
-                  <div className="relative w-full aspect-[4/3] bg-gray-50 dark:bg-background-dark rounded-xl overflow-hidden border border-neutral-light dark:border-neutral-dark flex items-center justify-center group">
+                  <label className="text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Preview</label>
+                  <div className="relative w-full h-full min-h-[220px] bg-gray-50 dark:bg-[#1A1A1A] rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 flex items-center justify-center group shadow-inner">
                     {imagePreview ? (
                       <>
-                        <img className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src={imagePreview} alt="Preview" />
+                        <img className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src={imagePreview} alt="Preview" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none"></div>
                         <button 
                           type="button"
                           onClick={() => setImagePreview(null)}
-                          className="absolute top-3 right-3 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full cursor-pointer shadow-lg transition-colors z-10"
+                          className="absolute top-3 right-3 bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg cursor-pointer shadow-lg transition-colors z-10 flex items-center gap-1 opacity-0 group-hover:opacity-100 translate-y-[-10px] group-hover:translate-y-0 duration-300"
                         >
-                          <span className="material-symbols-outlined text-sm block">close</span>
+                          <span className="material-symbols-outlined text-[16px]">delete</span>
+                          <span className="text-xs font-bold pr-1">Remove</span>
                         </button>
                       </>
                     ) : (
-                      <div className="absolute inset-0 bg-primary/5 flex flex-col items-center justify-center text-gray-400">
-                        <span className="material-symbols-outlined text-5xl mb-2">hide_image</span>
+                      <div className="flex flex-col items-center justify-center text-gray-400">
+                        <span className="material-symbols-outlined text-5xl mb-2 opacity-50">hide_image</span>
                         <span className="text-sm font-medium">No image selected</span>
                       </div>
                     )}
@@ -217,13 +240,14 @@ export default function AddMenuItemPage() {
             </section>
 
             {/* Actions */}
-            <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-4 pt-8 border-t border-neutral-light dark:border-neutral-dark">
-              <Link href="/admin">
-                <button className="w-full sm:w-auto px-8 py-3.5 rounded-xl border border-neutral-light dark:border-neutral-dark text-gray-700 dark:text-gray-300 font-bold hover:bg-gray-50 dark:hover:bg-surface-dark transition-colors cursor-pointer" type="button">
+            <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-4 pb-10">
+              <Link href="/admin" className="w-full sm:w-auto">
+                <button className="w-full px-6 py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm font-bold hover:bg-gray-50 dark:hover:bg-[#252525] transition-colors cursor-pointer" type="button">
                   Cancel
                 </button>
               </Link>
-              <button className="w-full sm:w-auto px-10 py-3.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-bold shadow-lg shadow-primary/20 hover:shadow-xl transition-all active:scale-95 cursor-pointer" type="submit">
+              <button className="w-full sm:w-auto px-8 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-bold shadow-md shadow-primary/20 hover:shadow-lg transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2" type="submit">
+                <span className="material-symbols-outlined text-[18px]">save</span>
                 Save Item
               </button>
             </div>
