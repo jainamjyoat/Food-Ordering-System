@@ -62,17 +62,32 @@ export default function AuthPage() {
         body: JSON.stringify(loginData),
       });
 
-      const data = await response.json();
+      // Read raw text first, then try to parse JSON
+      const responseText = await response.text();
+      let data: any;
+      try {
+        data = JSON.parse(responseText);
+      } catch (err) {
+        console.error('Backend returned non-JSON:', responseText);
+        setError('Server returned an unexpected response. Check the console.');
+        setLoading(false);
+        return;
+      }
 
       if (!response.ok) {
-        setError(data.error || 'Login failed');
+        setError(data?.error || 'Login failed');
+        setLoading(false);
         return;
       }
 
       setSuccess('Login successful! Redirecting...');
       try {
-        const profResp = await fetch('/api/user/profile', { method: 'GET' });
-        const profData = await profResp.json();
+        const profResp = await fetch('/api/user/profile', { method: 'GET', cache: 'no-store' });
+        const pct = profResp.headers.get('content-type') || '';
+        let profData: any = null;
+        if (profResp.ok && pct.includes('application/json')) {
+          try { profData = await profResp.json(); } catch {}
+        }
         const role = profData?.user?.role;
         const dest = role === 'admin' ? '/admin' : '/';
         setTimeout(() => {
@@ -105,10 +120,21 @@ export default function AuthPage() {
         body: JSON.stringify({ ...signupData, role: signupRole }),
       });
 
-      const data = await response.json();
+      // Read raw text first, then try to parse JSON
+      const responseText = await response.text();
+      let data: any;
+      try {
+        data = JSON.parse(responseText);
+      } catch (err) {
+        console.error('Backend returned non-JSON:', responseText);
+        setError('Server returned an unexpected response. Check the console.');
+        setLoading(false);
+        return;
+      }
 
       if (!response.ok) {
-        setError(data.error || 'Signup failed');
+        setError(data?.error || 'Signup failed');
+        setLoading(false);
         return;
       }
 
@@ -144,9 +170,13 @@ export default function AuthPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ credential: googleCredential, role }),
       });
-      const data = await resp.json();
+      const ct = resp.headers.get('content-type') || '';
+      let data: any = null;
+      if (ct.includes('application/json')) {
+        try { data = await resp.json(); } catch {}
+      }
       if (!resp.ok) {
-        setError(data.error || 'Google login failed');
+        setError((data && data.error) || 'Google login failed');
         setGooglePending(false);
         return;
       }

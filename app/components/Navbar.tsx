@@ -43,7 +43,8 @@ export default function Navbar() {
   const fetchProfile = React.useCallback(async () => {
     try {
       const res = await fetch("/api/user/profile", { cache: "no-store" });
-      if (res.ok) {
+      const ct = res.headers.get("content-type") || "";
+      if (res.ok && ct.includes("application/json")) {
         const data = await res.json();
         if (data?.user) {
           setUser(data.user);
@@ -60,6 +61,8 @@ export default function Navbar() {
         }
       } else if (res.status === 401) {
         setIsAuthenticated(false);
+      } else {
+        // Non-JSON or error response, do not attempt to parse
       }
     } catch {
       // ignore network errors for navbar refresh

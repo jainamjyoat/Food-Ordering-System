@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useCart } from '../context/CartContext';
-import { foodItems } from '../data/foodItems';
+// import { foodItems } from '../data/foodItems'; // replaced by DB fetch
 
 const CATEGORIES = ["Burgers", "Pizza", "Sushi", "Salads", "Desserts", "Drinks"];
 const DIETARY_OPTIONS = ["Vegan", "Gluten Free", "Halal"];
@@ -13,10 +13,13 @@ export default function FoodMenu() {
   // --- STATE ---
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState(50);
+  const [priceRange, setPriceRange] = useState(100);
   const [selectedDietary, setSelectedDietary] = useState<string[]>([]);
   const [minRating, setMinRating] = useState(0);
   const [sortOption, setSortOption] = useState("Recommended");
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [loadError, setLoadError] = useState<string>("");
 
   // --- HANDLERS ---
   const handleCategoryChange = (category: string) => {
@@ -31,9 +34,54 @@ export default function FoodMenu() {
     setSearchQuery(""); setSelectedCategories([]); setPriceRange(100); setSelectedDietary([]); setMinRating(0); setSortOption("Recommended");
   };
 
+  // --- EFFECT: Load items from DB ---
+  React.useEffect(() => {
+    let isMounted = true;
+    (async () => {
+      setLoading(true);
+      setLoadError("");
+      try {
+        const res = await fetch('/api/food-items', { cache: 'no-store' });
+        const text = await res.text();
+        let data: any;
+        try { data = JSON.parse(text); } catch (e) {
+          console.error('Non-JSON from /api/food-items:', text);
+          if (isMounted) setLoadError('Failed to load items');
+          return;
+        }
+        if (!res.ok) {
+          if (isMounted) setLoadError(data?.error || 'Failed to load items');
+          return;
+        }
+        const list = Array.isArray(data?.items) ? data.items : [];
+        // Normalize shape to match UI expectations
+        const normalized = list.map((doc: any, idx: number) => ({
+          // Use numeric id for cart; derive from index if needed
+          id: typeof doc.id === 'number' ? doc.id : idx + 1,
+          _id: doc._id, // keep Mongo ID if needed for details page
+          name: doc.name,
+          desc: doc.desc,
+          category: doc.category || 'Main Course',
+          price: Number(doc.price) || 0,
+          dietary: Array.isArray(doc.dietary) ? doc.dietary : [],
+          image: doc.imageUrl || doc.image || '/next.svg',
+          rating: Number(doc.rating) || 0,
+          badge: doc.badge,
+          badgeColor: doc.badgeColor,
+        }));
+        if (isMounted) setItems(normalized);
+      } catch (e) {
+        if (isMounted) setLoadError('Failed to load items');
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    })();
+    return () => { isMounted = false; };
+  }, []);
+
   // --- FILTERING LOGIC ---
   const filteredItems = useMemo(() => {
-    return foodItems.filter(item => {
+    return items.filter(item => {
       if (searchQuery && !item.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
       if (selectedCategories.length > 0 && !selectedCategories.includes(item.category)) return false;
       if (item.price > priceRange) return false;
@@ -43,7 +91,7 @@ export default function FoodMenu() {
       }
       if (item.rating < minRating) return false;
       return true;
-    }).sort((a: typeof foodItems[0], b: typeof foodItems[0]) => {
+    }).sort((a: any, b: any) => {
       if (sortOption === "Price: Low to High") return a.price - b.price;
       if (sortOption === "Price: High to Low") return b.price - a.price;
       if (sortOption === "Top Rated") return b.rating - a.rating;
@@ -225,6 +273,15 @@ export default function FoodMenu() {
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Popular Items</h1>
             <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Showing {filteredItems.length} results</span>
           </div>
+
+          {loadError && (
+            <div className="mb-6 p-3 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 rounded-lg text-sm">
+              {loadError}
+            </div>
+          )}
+          {loading && (
+            <div className="mb-6 text-gray-500 dark:text-gray-400">Loading items...</div>
+          )}
 
           {/* Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">

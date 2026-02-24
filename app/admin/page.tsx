@@ -49,7 +49,7 @@ export default function AdminDashboard() {
             <span className="material-symbols-outlined">dashboard</span>
             <span className="text-sm">Dashboard</span>
           </Link>
-          <Link href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
+          <Link href="/admin/oders" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
             <span className="material-symbols-outlined">shopping_bag</span>
             <span className="text-sm">Orders</span>
           </Link>
@@ -57,14 +57,14 @@ export default function AdminDashboard() {
             <span className="material-symbols-outlined">inventory_2</span>
             <span className="text-sm">Menu</span>
           </Link>
-          <Link href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
+          <Link href="/admin/user" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
             <span className="material-symbols-outlined">group</span>
             <span className="text-sm">Users</span>
           </Link>
-          <Link href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
+          {/* <Link href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
             <span className="material-symbols-outlined">settings</span>
             <span className="text-sm">Settings</span>
-          </Link>
+          </Link> */}
         </nav>
         
         <div className="p-4 mt-auto border-t border-gray-200 dark:border-gray-800">

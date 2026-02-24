@@ -9,10 +9,15 @@ export function GoogleAuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const fetchClientId = async () => {
       try {
-        const response = await fetch("/api/config/google");
+        const response = await fetch("/api/config/google", { cache: "no-store" });
+        const ct = response.headers.get("content-type") || "";
+        if (!response.ok || !ct.includes("application/json")) {
+          // Avoid parsing non-JSON (e.g., HTML or server actions output)
+          throw new Error(`Unexpected response for /api/config/google: status ${response.status}, content-type ${ct}`);
+        }
         const data = await response.json();
-        if (data.clientId) {
-          setClientId(data.clientId);
+        if (data && typeof data === "object" && (data as any).clientId) {
+          setClientId((data as any).clientId as string);
         }
       } catch (error) {
         console.error("Failed to fetch Google Client ID:", error);

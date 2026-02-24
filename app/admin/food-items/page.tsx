@@ -1,14 +1,65 @@
 "use client";
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function AddMenuItemPage() {
+  const router = useRouter();
   const [imagePreview, setImagePreview] = useState<string | null>("https://lh3.googleusercontent.com/aida-public/AB6AXuAhOdNDhweIyTGeYb21-aoOegyf2o49h0rHJAnF9m27WQMkaJtjQTqMvpwOUgne9xXlqIK_qwtMVCpYpbcnNkfth5zov9y3ze4BeQTa-9EcV_1m3nUghs9D38VGCh2FycRu7vdeRUmfBYX50pgsBdIjZWOliPeC55ZY79CoNFUFlJBc5Ac7W-c003DCwidMmuzpwLwvEpZ12fVzeOrnAbC3JrC6FmLq8s7In-PVUMxZ7Vh_IiLqbRT6_-YMnWFMkFqDkcla4YA2OZdY");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({ name: '', desc: '', price: '', category: 'Main Course', tags: '' });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add logic to save the new item
-    console.log("Saving new menu item...");
+    if (!form.name || !form.desc || !form.price || !form.category) return;
+    setSubmitting(true);
+    try {
+      let imageUrl: string | null = null;
+      if (selectedFile) {
+        const fd = new FormData();
+        fd.append('file', selectedFile);
+        const up = await fetch('/api/admin/uploads', { method: 'POST', body: fd });
+        const upJson = await up.json();
+        if (!up.ok) throw new Error(upJson.error || 'Upload failed');
+        imageUrl = upJson.url;
+      } else if (imagePreview) {
+        imageUrl = imagePreview;
+      }
+      if (!imageUrl) throw new Error('Image is required');
+
+      const dietary = form.tags.split(',').map(t => t.trim()).filter(Boolean);
+
+      const payload = {
+        name: form.name,
+        desc: form.desc,
+        category: form.category,
+        price: parseFloat(form.price),
+        dietary,
+        imageUrl,
+        rating: 4.5,
+      };
+
+      const resp = await fetch('/api/admin/food-items', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const json = await resp.json();
+      if (!resp.ok) throw new Error(json.error || 'Failed to create item');
+
+      router.push('/menu');
+    } catch (err) {
+      console.error(err);
+      alert((err as Error).message || 'Failed to save item');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -34,24 +85,24 @@ export default function AddMenuItemPage() {
             <span className="material-symbols-outlined">dashboard</span>
             <span className="text-sm">Dashboard</span>
           </Link>
-          <Link href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
+          <Link href="/admin/oders" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
             <span className="material-symbols-outlined">shopping_bag</span>
             <span className="text-sm">Orders</span>
           </Link>
           {/* Active State for Menu Management */}
-          <Link href="/admin/add-item" className="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary font-bold transition-all relative overflow-hidden group">
+          <Link href="/admin/food-item" className="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary font-bold transition-all relative overflow-hidden group">
             <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-md"></div>
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>restaurant_menu</span>
             <span className="text-sm">Menu</span>
           </Link>
-          <Link href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
+          <Link href="/admin/user" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
             <span className="material-symbols-outlined">group</span>
             <span className="text-sm">Users</span>
           </Link>
-          <Link href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
+          {/* <Link href="#" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white font-medium transition-colors">
             <span className="material-symbols-outlined">settings</span>
             <span className="text-sm">Settings</span>
-          </Link>
+          </Link> */}
         </nav>
         
         <div className="p-4 mt-auto border-t border-gray-200 dark:border-gray-800">
@@ -120,11 +171,11 @@ export default function AddMenuItemPage() {
               <div className="grid grid-cols-1 gap-6 bg-white dark:bg-[#1E1E1E] p-6 md:p-8 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
                 <div className="flex flex-col gap-2">
                   <label className="text-gray-700 dark:text-gray-300 text-sm font-bold">Item Name</label>
-                  <input className="w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-sm placeholder-gray-400" placeholder="e.g. Signature Truffle Burger" type="text" required />
+                  <input name="name" value={form.name} onChange={handleChange} className="w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-sm placeholder-gray-400" placeholder="e.g. Signature Truffle Burger" type="text" required />
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-gray-700 dark:text-gray-300 text-sm font-bold">Description</label>
-                  <textarea className="w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-sm resize-none placeholder-gray-400" placeholder="What makes this dish special? Mention key ingredients and flavor profiles..." rows={4} required></textarea>
+                  <textarea name="desc" value={form.desc} onChange={handleChange} className="w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-sm resize-none placeholder-gray-400" placeholder="What makes this dish special? Mention key ingredients and flavor profiles..." rows={4} required></textarea>
                 </div>
               </div>
             </section>
@@ -140,7 +191,7 @@ export default function AddMenuItemPage() {
                   <label className="text-gray-700 dark:text-gray-300 text-sm font-bold">Base Price ($)</label>
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
-                    <input className="w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-700 rounded-xl pl-8 pr-4 py-3 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-sm placeholder-gray-400" placeholder="0.00" step="0.01" type="number" required />
+                    <input name="price" value={form.price} onChange={handleChange} className="w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-700 rounded-xl pl-8 pr-4 py-3 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-sm placeholder-gray-400" placeholder="0.00" step="0.01" type="number" required />
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
@@ -174,7 +225,7 @@ export default function AddMenuItemPage() {
                 <div className="flex flex-col gap-2">
                   <label className="text-gray-700 dark:text-gray-300 text-sm font-bold">Primary Category</label>
                   <div className="relative">
-                    <select className="w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-sm appearance-none cursor-pointer">
+                    <select name="category" value={form.category} onChange={handleChange} className="w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-sm appearance-none cursor-pointer">
                         <option>Main Course</option>
                         <option>Appetizers</option>
                         <option>Desserts</option>
@@ -186,7 +237,7 @@ export default function AddMenuItemPage() {
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-gray-700 dark:text-gray-300 text-sm font-bold">Tags</label>
-                  <input className="w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-sm placeholder-gray-400" placeholder="Spicy, Vegan, Gluten-free (comma separated)" type="text" />
+                  <input name="tags" value={form.tags} onChange={handleChange} className="w-full bg-white dark:bg-[#1A1A1A] border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all shadow-sm placeholder-gray-400" placeholder="Spicy, Vegan, Gluten-free (comma separated)" type="text" />
                 </div>
               </div>
             </section>
@@ -206,7 +257,14 @@ export default function AddMenuItemPage() {
                     <span className="material-symbols-outlined text-4xl text-gray-400 group-hover:text-primary mb-3 transition-colors">cloud_upload</span>
                     <p className="text-gray-700 dark:text-gray-300 font-bold">Click to browse or drag & drop</p>
                     <p className="text-gray-500 font-medium text-xs mt-2 text-center">PNG, JPG or JPEG (Max 5MB)</p>
-                    <input className="hidden" type="file" accept="image/*" />
+                    <input className="hidden" type="file" accept="image/*" onChange={(e) => {
+                      const file = e.target.files?.[0] || null;
+                      setSelectedFile(file);
+                      if (file) {
+                        const url = URL.createObjectURL(file);
+                        setImagePreview(url);
+                      }
+                    }} />
                   </label>
                 </div>
                 
@@ -246,9 +304,9 @@ export default function AddMenuItemPage() {
                   Cancel
                 </button>
               </Link>
-              <button className="w-full sm:w-auto px-8 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-bold shadow-md shadow-primary/20 hover:shadow-lg transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2" type="submit">
+              <button disabled={submitting} className="w-full sm:w-auto px-8 py-3 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-bold shadow-md shadow-primary/20 hover:shadow-lg transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50" type="submit">
                 <span className="material-symbols-outlined text-[18px]">save</span>
-                Save Item
+                {submitting ? 'Saving...' : 'Save Item'}
               </button>
             </div>
 
