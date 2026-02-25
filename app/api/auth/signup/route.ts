@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { findUserByEmail, addUser } from '@/lib/db';
+import { hashPassword, signJwt } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,16 +25,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Store user (in production, hash the password)
-    const newUser = await addUser({ email, password, name, phone, role });
+    // Hash password and store user
+    const passwordHash = await hashPassword(password);
+    const newUser = await addUser({ email, password: passwordHash, name, phone, role });
 
-    return NextResponse.json(
+    const token = signJwt({ sub: newUser._id.toString(), email: newUser.email, role: newUser.role, name: newUser.name });
+    const res = NextResponse.json(
       { 
         message: 'Account created successfully',
-        user: { email: newUser.email, name: newUser.name, phone: newUser.phone, role: newUser.role }
+        user: { email: newUser.email, name: newUser.name, phone: newUser.phone, role: newUser.role },
+        token,
       },
       { status: 201 }
     );
+
+    res.cookies.set('auth_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7,
+      path: '/',
+    });
+
+    return res;
   } catch (error) {
     console.error('Signup error:', error);
     return NextResponse.json(

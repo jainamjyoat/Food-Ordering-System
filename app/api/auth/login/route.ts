@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyUserCredentials } from '@/lib/db';
+import { findUserByEmail } from '@/lib/db';
+import { verifyPassword, signJwt } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,26 +15,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify user credentials using db
-    const user = await verifyUserCredentials(email, password);
-    if (!user) {
+    // Find user and verify password using bcrypt
+    const user = await findUserByEmail(email);
+    if (!user || !user.password) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
         { status: 401 }
       );
     }
 
-    // Create response with user data
+    const valid = await verifyPassword(password, user.password);
+    if (!valid) {
+      return NextResponse.json(
+        { error: 'Invalid email or password' },
+        { status: 401 }
+      );
+    }
+
+    const token = signJwt({ sub: user._id.toString(), email: user.email, role: user.role, name: user.name });
+
     const response = NextResponse.json(
       { 
         message: 'Login successful',
-        user: { email: user.email, name: user.name, phone: user.phone }
+        user: { email: user.email, name: user.name, phone: user.phone, role: user.role },
+        token,
       },
       { status: 200 }
     );
 
-    // Set a simple auth cookie (in production, use secure, httpOnly cookies)
-    response.cookies.set('auth_token', email, {
+    response.cookies.set('auth_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

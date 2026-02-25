@@ -1,19 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { findUserByEmail, updateUser } from '@/lib/db';
-
-function getEmailFromCookie(req: NextRequest): string | null {
-  const cookie = req.cookies.get('auth_token');
-  return cookie?.value || null;
-}
+import { getUserFromRequest, hashPassword } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const email = getEmailFromCookie(request);
-    if (!email) {
+    const authUser = getUserFromRequest(request);
+    if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const user = await findUserByEmail(email);
+    const user = await findUserByEmail(authUser.email);
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
@@ -29,15 +25,15 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const email = getEmailFromCookie(request);
-    if (!email) {
+    const authUser = getUserFromRequest(request);
+    if (!authUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
 
     // Find user first
-    const user = await findUserByEmail(email);
+    const user = await findUserByEmail(authUser.email);
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
@@ -49,9 +45,9 @@ export async function PUT(request: NextRequest) {
     if (typeof body.picture === 'string') allowed.picture = body.picture;
     if (Array.isArray(body.addresses)) allowed.addresses = body.addresses; // [{label, line1, line2, city, state, zip, country}]
 
-    // Optional: change password (demo only, no hashing)
+    // Optional: change password (hashing)
     if (typeof body.password === 'string' && body.password.trim()) {
-      allowed.password = body.password.trim();
+      allowed.password = await hashPassword(body.password.trim());
     }
 
     const updated = await updateUser(user._id.toString(), allowed);
