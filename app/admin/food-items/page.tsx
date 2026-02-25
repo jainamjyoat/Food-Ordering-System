@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import Link from 'next/link';
+import AdminSidebarProfile from '@/app/components/AdminSidebarProfile';
 import { useRouter } from 'next/navigation';
 
 export default function AddMenuItemPage() {
@@ -106,19 +107,7 @@ export default function AddMenuItemPage() {
         </nav>
         
         <div className="p-4 mt-auto border-t border-gray-200 dark:border-gray-800">
-          <div className="bg-gray-50 hover:bg-gray-100 dark:bg-[#252525] dark:hover:bg-[#2A2A2A] rounded-xl p-3 flex items-center gap-3 transition-colors cursor-pointer border border-transparent dark:border-gray-800">
-            <div 
-              className="size-9 rounded-full bg-cover bg-center ring-2 ring-white dark:ring-gray-800 shadow-sm" 
-              style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBHFPt0gz9P0xGnuEJe8Y8admJEdO6aXkR8XzpE_KMtiRg9DV-6t3GEP_p63OlV3pXPkiqG60ObwObaHJ62IbGnW4sGS1jXeZ5ITVHyaYGqfi0IXFMaKEhMTrmv3iDrLOqnXqbg2niCeJCHkrQHYbgV6XHE5cEuFQo7msisYZZyt8pxFkqlFUDpQBC1r7Sq2Clao689-JGGwIVOXpoNtEnhoxv0FbbG4452hFGAevsdrmR1o7xVS_HjGwz7yBEFPH8B7BDw_Gkdddtp')" }}
-            ></div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-gray-900 dark:text-white truncate">Alex Chen</p>
-              <p className="text-xs font-medium text-gray-500 truncate">Super Admin</p>
-            </div>
-            <Link href="/login" className="text-gray-400 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10">
-              <span className="material-symbols-outlined text-xl">logout</span>
-            </Link>
-          </div>
+          <AdminSidebarProfile />
         </div>
       </aside>
 

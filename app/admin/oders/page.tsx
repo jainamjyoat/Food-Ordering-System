@@ -1,20 +1,122 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import AdminSidebarProfile from '@/app/components/AdminSidebarProfile';
 
 export default function OrderManagementPage() {
   const [activeFilter, setActiveFilter] = useState('All Orders');
 
-  // Dummy data with upgraded status pill colors matching the premium theme
-  const orders = [
-    { id: "#ORD-9921", initials: "AJ", name: "Alex Johnson", items: "2x Smokey Cheeseburger, 1x Truffle Fries", total: "$42.50", status: "Pending", statusColor: "bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400 border-gray-200 dark:border-gray-500/30" },
-    { id: "#ORD-9920", initials: "MG", name: "Maria Garcia", items: "1x Garden Fresh Pizza, 2x Italian Soda", total: "$31.90", status: "Preparing", statusColor: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400 border-amber-200 dark:border-amber-500/30" },
-    { id: "#ORD-9919", initials: "JW", name: "James Wilson", items: "3x Spicy Chicken Tacos, 1x Large Guacamole", total: "$22.15", status: "On Delivery", statusColor: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400 border-blue-200 dark:border-blue-500/30" },
-    { id: "#ORD-9918", initials: "SM", name: "Sarah Miller", items: "1x Teriyaki Tofu Bowl, 1x Miso Soup", total: "$18.00", status: "Delivered", statusColor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30" },
-    { id: "#ORD-9917", initials: "RC", name: "Robert Chen", items: "2x Salmon Sushi Platter", total: "$54.00", status: "Delivered", statusColor: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30" },
-  ];
+  // Live data state
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
+  // Fetch orders from API
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      try {
+        setLoading(true);
+        const res = await fetch('/api/orders/get', { cache: 'no-store' });
+        if (!res.ok) throw new Error(`Failed to fetch orders: ${res.status}`);
+        const data = await res.json();
+        if (!cancelled) setOrders(Array.isArray(data.orders) ? data.orders : []);
+      } catch (e: any) {
+        if (!cancelled) setError(e?.message || 'Failed to load orders');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    load();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Filters displayed in UI
   const filters = ["All Orders", "Pending", "Preparing", "On Delivery", "Delivered"];
+
+  // Helpers to normalize data coming from DB
+  function formatCurrency(amount: any) {
+    const num = typeof amount === 'number' ? amount : Number(amount || 0);
+    return num.toLocaleString(undefined, { style: 'currency', currency: 'USD' });
+  }
+
+  function getStatus(order: any) {
+    // Normalize possible status values from DB
+    const raw = (order?.status || '').toString();
+    const normalized = raw.toLowerCase();
+    if (normalized === 'pending') return 'Pending';
+    if (normalized === 'preparing' || normalized === 'processing') return 'Preparing';
+    if (normalized === 'on_delivery' || normalized === 'delivering' || normalized === 'shipped') return 'On Delivery';
+    if (normalized === 'delivered' || normalized === 'completed') return 'Delivered';
+    return raw ? raw[0].toUpperCase() + raw.slice(1) : 'Pending';
+  }
+
+  function statusColorClass(status: string) {
+    switch (status) {
+      case 'Pending':
+        return 'bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400 border-gray-200 dark:border-gray-500/30';
+      case 'Preparing':
+        return 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400 border-amber-200 dark:border-amber-500/30';
+      case 'On Delivery':
+        return 'bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400 border-blue-200 dark:border-blue-500/30';
+      case 'Delivered':
+        return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30';
+      default:
+        return 'bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400 border-gray-200 dark:border-gray-500/30';
+    }
+  }
+
+  function getCustomerName(order: any) {
+    return order?.customerName || order?.name || order?.userName || order?.email || 'Guest';
+  }
+
+  function getInitials(name: string) {
+    try {
+      const parts = name.trim().split(/\s+/);
+      if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+      return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+    } catch {
+      return 'CU';
+    }
+  }
+
+  function getItemsSummary(order: any) {
+    const items = order?.items || order?.orderItems || [];
+    if (Array.isArray(items) && items.length) {
+      return items
+        .map((it: any) => `${it.quantity || 1}x ${it.name || it.title || it.itemName || 'Item'}`)
+        .join(', ');
+    }
+    return order?.itemsDescription || '—';
+  }
+
+  function getTotal(order: any) {
+    const total = order?.total ?? order?.totalAmount ?? order?.amount;
+    if (typeof total !== 'undefined') return formatCurrency(total);
+    const items = order?.items || order?.orderItems || [];
+    if (Array.isArray(items) && items.length) {
+      const sum = items.reduce((acc: number, it: any) => acc + (Number(it.price || 0) * Number(it.quantity || 1)), 0);
+      return formatCurrency(sum);
+    }
+    return formatCurrency(0);
+  }
+
+  const filteredOrders = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    const byFilter = orders.filter((o: any) => {
+      if (activeFilter === 'All Orders') return true;
+      const st = getStatus(o);
+      return st === activeFilter;
+    });
+    if (!q) return byFilter;
+    return byFilter.filter((o: any) => {
+      const id = (o._id?.toString?.() || o.id || '').toString().toLowerCase();
+      const name = getCustomerName(o).toLowerCase();
+      const items = getItemsSummary(o).toLowerCase();
+      return id.includes(q) || name.includes(q) || items.includes(q);
+    });
+  }, [orders, activeFilter, searchQuery]);
 
   return (
     // Changed to min-h-screen and w-full for native scrolling and full width
@@ -40,7 +142,7 @@ export default function OrderManagementPage() {
             <span className="text-sm">Dashboard</span>
           </Link>
           {/* Active State for Orders */}
-          <Link href="/admin/orders" className="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary font-bold transition-all relative overflow-hidden group">
+          <Link href="/admin/oders" className="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary font-bold transition-all relative overflow-hidden group">
             <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-r-md"></div>
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>shopping_bag</span>
             <span className="text-sm">Orders</span>
@@ -60,19 +162,7 @@ export default function OrderManagementPage() {
         </nav>
         
         <div className="p-4 mt-auto border-t border-gray-200 dark:border-gray-800">
-          <div className="bg-gray-50 hover:bg-gray-100 dark:bg-[#252525] dark:hover:bg-[#2A2A2A] rounded-xl p-3 flex items-center gap-3 transition-colors cursor-pointer border border-transparent dark:border-gray-800">
-            <div 
-              className="size-9 rounded-full bg-cover bg-center ring-2 ring-white dark:ring-gray-800 shadow-sm" 
-              style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBHFPt0gz9P0xGnuEJe8Y8admJEdO6aXkR8XzpE_KMtiRg9DV-6t3GEP_p63OlV3pXPkiqG60ObwObaHJ62IbGnW4sGS1jXeZ5ITVHyaYGqfi0IXFMaKEhMTrmv3iDrLOqnXqbg2niCeJCHkrQHYbgV6XHE5cEuFQo7msisYZZyt8pxFkqlFUDpQBC1r7Sq2Clao689-JGGwIVOXpoNtEnhoxv0FbbG4452hFGAevsdrmR1o7xVS_HjGwz7yBEFPH8B7BDw_Gkdddtp')" }}
-            ></div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-gray-900 dark:text-white truncate">Alex Chen</p>
-              <p className="text-xs font-medium text-gray-500 truncate">Super Admin</p>
-            </div>
-            <Link href="/login" className="text-gray-400 hover:text-red-500 transition-colors p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-500/10">
-              <span className="material-symbols-outlined text-xl">logout</span>
-            </Link>
-          </div>
+          <AdminSidebarProfile />
         </div>
       </aside>
 
@@ -124,6 +214,8 @@ export default function OrderManagementPage() {
                 className="w-full pl-11 pr-4 py-3 bg-white dark:bg-[#1E1E1E] border border-gray-200 dark:border-gray-800 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder-gray-400 text-sm text-gray-900 dark:text-white shadow-sm" 
                 placeholder="Search by Order ID, Customer name or Items..." 
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
             <div className="flex items-center gap-2 overflow-x-auto pb-2 xl:pb-0 hide-scrollbar flex-1">
@@ -158,24 +250,39 @@ export default function OrderManagementPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                  {orders.map((order, idx) => (
+                  {loading && (
+                    <tr>
+                      <td className="px-6 py-5 text-sm text-gray-500 dark:text-gray-400" colSpan={6}>Loading orders...</td>
+                    </tr>
+                  )}
+                  {error && !loading && (
+                    <tr>
+                      <td className="px-6 py-5 text-sm text-red-600" colSpan={6}>{error}</td>
+                    </tr>
+                  )}
+                  {!loading && !error && filteredOrders.length === 0 && (
+                    <tr>
+                      <td className="px-6 py-5 text-sm text-gray-500 dark:text-gray-400" colSpan={6}>No orders found.</td>
+                    </tr>
+                  )}
+                  {!loading && !error && filteredOrders.map((order: any, idx: number) => (
                     <tr key={idx} className="hover:bg-gray-50/80 dark:hover:bg-white/[0.02] transition-colors group cursor-pointer w-full">
-                      <td className="px-6 py-5 font-bold text-sm text-gray-900 dark:text-white">{order.id}</td>
+                      <td className="px-6 py-5 font-bold text-sm text-gray-900 dark:text-white">{order._id || order.id}</td>
                       <td className="px-6 py-5">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-xs font-bold text-primary flex-shrink-0">
-                            {order.initials}
+                            {getInitials(getCustomerName(order))}
                           </div>
-                          <span className="text-sm font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors whitespace-nowrap">{order.name}</span>
+                          <span className="text-sm font-bold text-gray-700 dark:text-gray-200 group-hover:text-primary transition-colors whitespace-nowrap">{getCustomerName(order)}</span>
                         </div>
                       </td>
                       <td className="px-6 py-5 max-w-xs">
-                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate pr-4">{order.items}</p>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 truncate pr-4">{getItemsSummary(order)}</p>
                       </td>
-                      <td className="px-6 py-5 text-right font-black text-sm text-gray-900 dark:text-white">{order.total}</td>
+                      <td className="px-6 py-5 text-right font-black text-sm text-gray-900 dark:text-white">{getTotal(order)}</td>
                       <td className="px-6 py-5">
-                        <span className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-[11px] font-bold border ${order.statusColor} whitespace-nowrap`}>
-                          {order.status}
+                        <span className={`inline-flex items-center justify-center px-3 py-1 rounded-full text-[11px] font-bold border ${statusColorClass(getStatus(order))} whitespace-nowrap`}>
+                          {getStatus(order)}
                         </span>
                       </td>
                       <td className="px-6 py-5">
@@ -196,7 +303,7 @@ export default function OrderManagementPage() {
             
             {/* Pagination */}
             <div className="px-6 py-4 flex items-center justify-between border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-[#1E1E1E] w-full">
-              <p className="text-sm font-medium text-gray-500">Showing <span className="font-bold text-gray-900 dark:text-white">5</span> of <span className="font-bold text-gray-900 dark:text-white">124</span> orders</p>
+              <p className="text-sm font-medium text-gray-500">Showing <span className="font-bold text-gray-900 dark:text-white">{!loading && !error ? filteredOrders.length : 0}</span> of <span className="font-bold text-gray-900 dark:text-white">{!loading && !error ? orders.length : 0}</span> orders</p>
               <div className="flex items-center gap-1.5">
                 <button disabled className="w-9 h-9 flex items-center justify-center rounded-xl border border-gray-200 dark:border-gray-700 text-gray-400 disabled:opacity-50 cursor-not-allowed bg-gray-50 dark:bg-[#252525]">
                   <span className="material-symbols-outlined text-[18px]">chevron_left</span>
